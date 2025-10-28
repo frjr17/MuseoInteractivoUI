@@ -5,8 +5,9 @@ interface UserState {
   lastName: string;
   email: string;
   sessionToken: string;
-  position: string;
+  globalPosition: number;
   role: string;
+  totalPoints?: number;
   createdAt: Date | null;
   updatedAt: Date | null;
   isLoading: boolean;
@@ -18,7 +19,8 @@ export const useUserStore = create<UserState>(() => ({
   lastName: "",
   email: "",
   sessionToken: "",
-  position: "",
+  globalPosition: 0,
+  totalPoints: 0,
   role: "",
   createdAt: null,
   updatedAt: null,

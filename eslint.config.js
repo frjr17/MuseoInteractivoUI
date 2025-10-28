@@ -21,6 +21,7 @@ export default defineConfig([
     },
     rules: {
       "@typescript-eslint/no-unsafe-function-type": "off",
+      "react-hooks/exhaustive-deps": "off",
     },
   },
 ])

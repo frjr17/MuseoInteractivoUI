@@ -10,14 +10,19 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
 import { Lock } from "lucide-react";
 import { Button } from "./ui/button";
+import { useLocation, useNavigate } from "react-router";
+import { useEffect } from "react";
 
 export default function ResetPassword() {
   const authStore = useAuthStore();
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     authStore.setFormField(name as authFormKeys, value);
   };
+
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (authStore.password !== authStore.confirmPassword) {
@@ -26,7 +31,15 @@ export default function ResetPassword() {
     }
     console.log("Resetting password");
     // Aquí iría la lógica para cambiar la contraseña
+    navigate("/forgot-password/success");
   };
+
+  useEffect(() => {
+    if (location.state?.previousLocation !== "/forgot-password/verify") {
+      navigate("/forgot-password");
+      return;
+    }
+  }, [location.state?.previousLocation, navigate]);
 
   return (
     <Card className="border-purple-100 shadow-lg">

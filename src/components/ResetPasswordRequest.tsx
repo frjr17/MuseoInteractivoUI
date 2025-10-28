@@ -1,35 +1,46 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuthStore, type authFormKeys } from "@/store/auth";
 import { Label } from "@radix-ui/react-label";
 import { ArrowLeft, Mail } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export default function ResetPasswordRequest() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const handleSendCode = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Sending code to:", authStore.email);
+    
     // Aquí iría la lógica para enviar el código
-   navigate("/forgot-password/verify");
+    
+    navigate("/forgot-password/verify", {
+      state: { previousLocation: location.pathname },
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     authStore.setFormField(name as authFormKeys, value);
-  }
+  };
 
   const handleReturnToLogin = () => {
-    // Lógica para redirigir a la página de inicio de sesión
-    console.log("Returning to login");
+    authStore.setFormField("email", "");
     navigate("/sign");
   };
   return (
     <Card className="border-purple-100 shadow-lg">
       <CardHeader>
-        <CardTitle  className="text-purple-900">Recuperar Contraseña</CardTitle>
+        <CardTitle className="text-purple-900">Recuperar Contraseña</CardTitle>
         <CardDescription className="text-purple-600">
           Ingresa tu correo electrónico para recibir un código de verificación
         </CardDescription>

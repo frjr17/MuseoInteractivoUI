@@ -9,7 +9,7 @@ export interface AuthState {
   rememberMe?: boolean;
   isLoading: boolean;
   resetCode: string;
-  setFormField: (field: authFormKeys, value: string|boolean) => void;
+  setFormField: (field: authFormKeys, value: string | boolean) => void;
   login: (email: string, password: string) => Promise<void>;
   register: (
     name: string,
@@ -20,12 +20,23 @@ export interface AuthState {
   ) => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
   verifyPasswordResetCode: (code: string) => Promise<boolean>;
-  resetPassword: (newPassword: string, confirmPassword: string) => Promise<void>;
+  resetPassword: (
+    newPassword: string,
+    confirmPassword: string
+  ) => Promise<void>;
   logout: () => Promise<void>;
+  reset: () => void;
 }
 
-export type authFormKeys = 'name' | 'lastName' | 'email' | 'password' | 'confirmPassword' | 'rememberMe' | 'resetCode';
-// type StringKeys<T> = { [K in keyof T]: T[K] extends string ? K : never }[keyof T];
+export type authFormKeys =
+  | "name"
+  | "lastName"
+  | "email"
+  | "password"
+  | "confirmPassword"
+  | "rememberMe"
+  | "resetCode";
+
 
 export const useAuthStore = create<AuthState>((set) => ({
   name: "",
@@ -36,7 +47,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: false,
   rememberMe: false,
   resetCode: "",
-  setFormField: (field: authFormKeys, value: string|boolean) =>
+  setFormField: (field: authFormKeys, value: string | boolean) =>
     set({ [field]: value }),
   login: async (email: string, password: string) => {
     // Implement login logic here
@@ -73,9 +84,20 @@ export const useAuthStore = create<AuthState>((set) => ({
     // Implement password reset logic here
     set({ isLoading: true });
     console.log(newPassword, confirmPassword);
-    set({ isLoading: false });  
+    set({ isLoading: false });
   },
   logout: async () => {
     // Implement logout logic here
   },
+  reset: () =>
+    set({
+      name: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      isLoading: false,
+      rememberMe: false,
+      resetCode: "",
+    }),
 }));

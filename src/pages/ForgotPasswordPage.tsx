@@ -4,8 +4,17 @@ import ResetPasswordRequest from "@/components/ResetPasswordRequest";
 import VerifyEmail from "@/components/VerifyEmail";
 import ResetPassword from "@/components/ResetPassword";
 import PasswordResetSuccess from "@/components/PasswordResetSuccess";
+import { useEffect } from "react";
+import { useAuthStore } from "@/store/auth";
 
 export function ForgotPassword() {
+  const authStore = useAuthStore();
+  useEffect(()=>{
+    return ()=>{
+      authStore.reset();
+    }
+  },[])
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50 p-4">
       <div className="w-full max-w-md">
@@ -22,7 +31,7 @@ export function ForgotPassword() {
           <Route index element={<ResetPasswordRequest />} />
           <Route path="verify" element={<VerifyEmail />} />
           <Route path="reset" element={<ResetPassword />} />
-          <Route path="password" element={<PasswordResetSuccess />} />
+          <Route path="success" element={<PasswordResetSuccess />} />
         </Routes>
       </div>
     </div>

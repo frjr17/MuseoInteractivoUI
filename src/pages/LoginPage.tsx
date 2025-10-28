@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { LogIn, UserPlus, Mail, Lock, User } from "lucide-react";
 import { useAuthStore, type authFormKeys } from "@/store/auth";
 import type { CheckedState } from "@radix-ui/react-checkbox";
+import { Link } from "react-router";
 
 export default function LoginPage() {
   const authStore = useAuthStore();
@@ -147,13 +148,12 @@ export default function LoginPage() {
                           Recuérdame
                         </label>
                       </div>
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto text-sm text-purple-600 hover:text-purple-800"
-                        onClick={() => setShowForgotPassword(true)}
+                      <Link
+                        className="pointer font-semibold p-0 h-auto text-sm text-purple-600 hover:text-purple-800"
+                        to={"/forgot-password"}
                       >
                         ¿Olvidaste tu contraseña?
-                      </Button>
+                      </Link>
                     </div>
 
                     <Button

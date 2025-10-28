@@ -6,8 +6,8 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/sign" element={<LoginPage />} />
+      <Route path="/forgot-password/*" element={<ForgotPassword />} />
     </Routes>
   )
 }

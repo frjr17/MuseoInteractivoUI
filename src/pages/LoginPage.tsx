@@ -20,15 +20,23 @@ export default function LoginPage() {
     
   }
   
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     // Simular login exitoso
+    await authStore.login(authStore.email, authStore.password);
    
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     // Simular registro exitoso
+    await authStore.register(
+      authStore.name,
+      authStore.lastName,
+      authStore.email,
+      authStore.password,
+      authStore.confirmPassword
+    );
   };
 
   if (showForgotPassword) {

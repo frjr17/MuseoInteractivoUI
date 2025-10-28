@@ -8,6 +8,7 @@ interface UserState {
   role: string;
   createdAt: Date | null;
   updatedAt: Date | null;
+  isLoading: boolean;
 }
 
 export const useUserStore = create<UserState>(() => ({
@@ -18,4 +19,5 @@ export const useUserStore = create<UserState>(() => ({
   role: "",
   createdAt: null,
   updatedAt: null,
+  isLoading: false,
 }));

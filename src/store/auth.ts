@@ -1,9 +1,12 @@
+import { create } from "zustand";
+
 interface AuthState {
   name: string;
   lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
+  isLoading: boolean;
   login: (email: string, password: string) => void;
   register: (
     name: string,
@@ -24,6 +27,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   email: "",
   password: "",
   confirmPassword: "",
+  isLoading: false,
   login: (email: string, password: string) => {
     // Implement login logic here
   },

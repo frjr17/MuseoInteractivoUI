@@ -12,13 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LogIn, UserPlus, Mail, Lock, User } from "lucide-react";
-import { ForgotPassword } from "@/pages/ForgotPasswordPage";
 import { useAuthStore, type authFormKeys } from "@/store/auth";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 
 export default function LoginPage() {
   const authStore = useAuthStore();
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | CheckedState

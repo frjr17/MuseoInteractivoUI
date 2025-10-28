@@ -71,7 +71,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
     console.log(newPassword, confirmPassword);
     set({ isLoading: false });  
-    return true;
   },
   logout: async () => {
     // Implement logout logic here

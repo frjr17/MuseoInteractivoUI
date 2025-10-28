@@ -7,33 +7,28 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LogIn, UserPlus, Mail, Lock, User } from "lucide-react";
 import { ForgotPassword } from "@/components/ForgotPassword";
+import { useAuthStore, type AuthState, type NonFunctionKeys } from "@/store/auth";
 
 export default function LoginPage() {
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [registerFirstName, setRegisterFirstName] = useState("");
-  const [registerLastName, setRegisterLastName] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
-  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+  const authStore = useAuthStore()
   const [rememberMe, setRememberMe] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    authStore.setFormField(e.target.name as NonFunctionKeys<AuthState>, e.target.value);
+    
+  }
   
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login:", { loginEmail, loginPassword, rememberMe });
     // Simular login exitoso
    
-    setIsLoggedIn(true);
   };
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register:", { registerFirstName, registerLastName, registerEmail, registerPassword });
     // Simular registro exitoso
-    setIsLoggedIn(true);
-    console.log(isLoggedIn)
   };
 
   if (showForgotPassword) {
@@ -81,8 +76,9 @@ export default function LoginPage() {
                           type="email"
                           placeholder="tu@ejemplo.com"
                           className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                          value={loginEmail}
-                          onChange={(e) => setLoginEmail(e.target.value)}
+                          name="email"
+                          value={authStore.email}
+                          onChange={handleChange}
                           required
                         />
                       </div>
@@ -97,8 +93,9 @@ export default function LoginPage() {
                           type="password"
                           placeholder="••••••••"
                           className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                          value={loginPassword}
-                          onChange={(e) => setLoginPassword(e.target.value)}
+                          name="password"
+                          value={authStore.password}
+                          onChange={handleChange}
                           required
                         />
                       </div>
@@ -151,8 +148,9 @@ export default function LoginPage() {
                             type="text"
                             placeholder="Juan"
                             className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                            value={registerFirstName}
-                            onChange={(e) => setRegisterFirstName(e.target.value)}
+                            name="name"
+                            value={authStore.name}
+                            onChange={handleChange}
                             required
                           />
                         </div>
@@ -165,8 +163,9 @@ export default function LoginPage() {
                           type="text"
                           placeholder="Pérez"
                           className="border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                          value={registerLastName}
-                          onChange={(e) => setRegisterLastName(e.target.value)}
+                          name="lastName"
+                          value={authStore.lastName}
+                          onChange={handleChange}
                           required
                         />
                       </div>
@@ -181,8 +180,9 @@ export default function LoginPage() {
                           type="email"
                           placeholder="tu@ejemplo.com"
                           className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                          value={registerEmail}
-                          onChange={(e) => setRegisterEmail(e.target.value)}
+                          name="email"
+                          value={authStore.email}
+                          onChange={handleChange}
                           required
                         />
                       </div>
@@ -197,8 +197,9 @@ export default function LoginPage() {
                           type="password"
                           placeholder="••••••••"
                           className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                          value={registerPassword}
-                          onChange={(e) => setRegisterPassword(e.target.value)}
+                          name="password"
+                          value={authStore.password}
+                          onChange={handleChange}
                           required
                         />
                       </div>
@@ -211,10 +212,11 @@ export default function LoginPage() {
                         <Input
                           id="register-confirm-password"
                           type="password"
-                          placeholder="•••••���••"
+                          placeholder="••••••••"
                           className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                          value={registerConfirmPassword}
-                          onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                          name="confirmPassword"
+                          value={authStore.confirmPassword}
+                          onChange={handleChange}
                           required
                         />
                       </div>

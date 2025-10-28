@@ -1,12 +1,13 @@
 import { create } from "zustand";
 
-interface AuthState {
+export interface AuthState {
   name: string;
   lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
   isLoading: boolean;
+  setFormField: (field: NonFunctionKeys<AuthState>, value: string) => void;
   login: (email: string, password: string) => void;
   register: (
     name: string,
@@ -21,6 +22,10 @@ interface AuthState {
   logout: () => void;
 }
 
+ 
+export type NonFunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T];
+// type StringKeys<T> = { [K in keyof T]: T[K] extends string ? K : never }[keyof T];
+
 export const useAuthStore = create<AuthState>((set) => ({
   name: "",
   lastName: "",
@@ -28,6 +33,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   password: "",
   confirmPassword: "",
   isLoading: false,
+  setFormField: (field: NonFunctionKeys<AuthState>, value: string) =>
+    set({ [field]: value }),
   login: (email: string, password: string) => {
     // Implement login logic here
     set({ isLoading: true });

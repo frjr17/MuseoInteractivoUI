@@ -1,54 +1,45 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Button } from "./ui/button";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Button } from "../components/ui/button";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "../components/ui/input-otp";
 import { Mail, Lock, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { useAuthStore, type authFormKeys } from "@/store/auth";
 
-interface ForgotPasswordProps {
-  onBack: () => void;
-}
 
-export function ForgotPassword({ onBack }: ForgotPasswordProps) {
-  const [step, setStep] = useState<"email" | "code" | "password" | "success">("email");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+export function ForgotPassword() {
+  const authStore = useAuthStore();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    authStore.setFormField(name as authFormKeys, value);
+  }
 
   const handleSendCode = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sending code to:", email);
+    console.log("Sending code to:", authStore.email);
     // Aquí iría la lógica para enviar el código
-    setStep("code");
   };
 
   const handleValidateCode = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Validating code:", code);
+    console.log("Validating code:", authStore.resetCode);
     // Aquí iría la lógica para validar el código
-    setStep("password");
   };
 
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
+    if (authStore.password !== authStore.confirmPassword) {
       alert("Las contraseñas no coinciden");
       return;
     }
     console.log("Resetting password");
     // Aquí iría la lógica para cambiar la contraseña
-    setStep("success");
   };
 
   const handleReturnToLogin = () => {
-    setStep("email");
-    setEmail("");
-    setCode("");
-    setNewPassword("");
-    setConfirmPassword("");
-    onBack();
+    // Lógica para redirigir a la página de inicio de sesión
+    console.log("Returning to login");
   };
 
   return (
@@ -62,7 +53,7 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
           <p className="text-purple-700">Recupera tu contraseña</p>
         </div>
 
-        {step === "email" && (
+         
           <Card className="border-purple-100 shadow-lg">
             <CardHeader>
               <CardTitle className="text-purple-900">Recuperar Contraseña</CardTitle>
@@ -82,8 +73,9 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
                         type="email"
                         placeholder="tu@ejemplo.com"
                         className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        name="email"
+                        value={authStore.email}
+                        onChange={handleChange}
                         required
                       />
                     </div>
@@ -97,7 +89,7 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
                     type="button"
                     variant="ghost"
                     className="w-full text-purple-600 hover:text-purple-800 hover:bg-purple-50"
-                    onClick={onBack}
+                    onClick={handleReturnToLogin}
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Volver al inicio de sesión
@@ -106,14 +98,14 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
               </form>
             </CardContent>
           </Card>
-        )}
 
-        {step === "code" && (
+
+        
           <Card className="border-purple-100 shadow-lg">
             <CardHeader>
               <CardTitle className="text-purple-900">Verificar Código</CardTitle>
               <CardDescription className="text-purple-600">
-                Ingresa el código de 6 dígitos enviado a {email}
+                Ingresa el código de 6 dígitos enviado a {authStore.email}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -124,8 +116,8 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
                     <div className="flex justify-center">
                       <InputOTP
                         maxLength={6}
-                        value={code}
-                        onChange={(value) => setCode(value)}
+                        value={authStore.resetCode}
+                        onChange={(value) => authStore.setFormField("resetCode", value)}
                       >
                         <InputOTPGroup>
                           <InputOTPSlot index={0} className="border-purple-200 focus:border-purple-400" />
@@ -142,7 +134,7 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
-                    disabled={code.length !== 6}
+                    disabled={authStore.resetCode.length !== 6}
                   >
                     Validar Código
                   </Button>
@@ -151,7 +143,7 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
                     type="button"
                     variant="ghost"
                     className="w-full text-purple-600 hover:text-purple-800 hover:bg-purple-50"
-                    onClick={() => setStep("email")}
+                    // onClick={() => setStep("email")}
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Volver atrás
@@ -171,9 +163,9 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
               </form>
             </CardContent>
           </Card>
-        )}
 
-        {step === "password" && (
+
+       
           <Card className="border-purple-100 shadow-lg">
             <CardHeader>
               <CardTitle className="text-purple-900">Nueva Contraseña</CardTitle>
@@ -193,8 +185,9 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
                         type="password"
                         placeholder="••••••••"
                         className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
+                        name="password" 
+                        value={authStore.password}
+                        onChange={handleChange}
                         required
                       />
                     </div>
@@ -209,8 +202,8 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
                         type="password"
                         placeholder="••••••••"
                         className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        value={authStore.confirmPassword}
+                        onChange={handleChange}
                         required
                       />
                     </div>
@@ -223,9 +216,10 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
               </form>
             </CardContent>
           </Card>
-        )}
 
-        {step === "success" && (
+
+     
+     
           <Card className="border-purple-100 shadow-lg">
             <CardHeader>
               <div className="flex justify-center mb-4">
@@ -247,7 +241,7 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
               </Button>
             </CardContent>
           </Card>
-        )}
+
       </div>
     </div>
   );

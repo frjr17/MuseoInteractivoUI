@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LogIn, UserPlus, Mail, Lock, User } from "lucide-react";
-import { ForgotPassword } from "@/components/ForgotPassword";
+import { ForgotPassword } from "@/pages/ForgotPasswordPage";
 import { useAuthStore, type authFormKeys } from "@/store/auth";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 
@@ -55,7 +55,7 @@ export default function LoginPage() {
   };
 
   if (showForgotPassword) {
-    return <ForgotPassword onBack={() => setShowForgotPassword(false)} />;
+    return <ForgotPassword/>;
   }
 
   return (

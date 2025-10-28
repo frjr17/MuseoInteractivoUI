@@ -8,6 +8,7 @@ export interface AuthState {
   confirmPassword: string;
   rememberMe?: boolean;
   isLoading: boolean;
+  resetCode: string;
   setFormField: (field: authFormKeys, value: string|boolean) => void;
   login: (email: string, password: string) => Promise<void>;
   register: (
@@ -23,7 +24,7 @@ export interface AuthState {
   logout: () => Promise<void>;
 }
 
-export type authFormKeys = 'name' | 'lastName' | 'email' | 'password' | 'confirmPassword' | 'rememberMe';
+export type authFormKeys = 'name' | 'lastName' | 'email' | 'password' | 'confirmPassword' | 'rememberMe' | 'resetCode';
 // type StringKeys<T> = { [K in keyof T]: T[K] extends string ? K : never }[keyof T];
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -34,6 +35,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   confirmPassword: "",
   isLoading: false,
   rememberMe: false,
+  resetCode: "",
   setFormField: (field: authFormKeys, value: string|boolean) =>
     set({ [field]: value }),
   login: async (email: string, password: string) => {

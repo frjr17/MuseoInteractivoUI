@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   password: "",
   confirmPassword: "",
   isLoading: false,
-  rememberMe: false,
+  rememberMe: true,
   resetCode: "",
   setFormField: (field: authFormKeys, value: string | boolean) =>
     set({ [field]: value }),

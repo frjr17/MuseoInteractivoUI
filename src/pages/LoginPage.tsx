@@ -14,10 +14,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { LogIn, UserPlus, Mail, Lock, User } from "lucide-react";
 import { useAuthStore, type authFormKeys } from "@/store/auth";
 import type { CheckedState } from "@radix-ui/react-checkbox";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function LoginPage() {
   const authStore = useAuthStore();
+  const navigate = useNavigate();
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | CheckedState
@@ -39,6 +41,7 @@ export default function LoginPage() {
     e.preventDefault();
     // Simular login exitoso
     await authStore.login(authStore.email, authStore.password);
+    navigate("/");
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -51,6 +54,7 @@ export default function LoginPage() {
       authStore.password,
       authStore.confirmPassword
     );
+    navigate("/");
   };
 
   return (

@@ -1,118 +1,43 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import { 
-  User, 
-  LogOut, 
-  Trophy, 
+import {
+  User,
+  LogOut,
+  Trophy,
   Camera,
   Sparkles,
   Star,
-  Award
+  Award,
 } from "lucide-react";
 import { useUserStore } from "@/store/user";
 import { useAuthStore } from "@/store/auth";
-
-
-
-interface Challenge {
-  id: number;
-  title: string;
-  room: string;
-  progress: number;
-  total: number;
-  completed: boolean;
-  points: number;
-}
+import { useRoomStore } from "@/store/room";
 
 export function MuseumHome() {
-    const userStore = useUserStore();
-    const authStore = useAuthStore();
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const userStore = useUserStore();
+  const authStore = useAuthStore();
+  const roomStore = useRoomStore();
 
   useEffect(() => {
-    setChallenges(
-        [
-    {
-      id: 1,
-      title: "El Secreto del Canal",
-      room: "Sala 1",
-      progress: 3,
-      total: 5,
-      completed: false,
-      points: 100,
-    },
-    {
-      id: 2,
-      title: "Leyendas panameñas",
-      room: "Sala 2",
-      progress: 0,
-      total: 10,
-      completed: false,
-      points: 150,
-    },
-    {
-      id: 3,
-      title: "El tesoro verde de Panamá",
-      room: "Sala 3",
-      progress: 7,
-      total: 15,
-      completed: false,
-      points: 200,
-    },
-    {
-      id: 4,
-      title: "Sabores y colores de Panamá",
-      room: "Sala 4",
-      progress: 3,
-      total: 5,
-      completed: false,
-      points: 120,
-    },
-    {
-      id: 5,
-      title: "Las llaves de la ciudad",
-      room: "Sala 5",
-      progress: 3,
-      total: 5,
-      completed: false,
-      points: 180,
-    },
-  ]
-    )
+    roomStore.getRooms();
   }, []);
 
   const getInitials = () => {
-    return `${userStore.name.charAt(0)}${userStore.lastName.charAt(0)}`.toUpperCase();
+    return `${userStore.name.charAt(0)}${userStore.lastName.charAt(
+      0
+    )}`.toUpperCase();
   };
 
-  const totalChallenges = challenges.length;
-
-  const isChallengeUnlocked = (challengeId: number) => {
-    if (challengeId === 1) return true; // Primera sala siempre desbloqueada
-    const previousChallenge = challenges.find(c => c.id === challengeId - 1);
-    return previousChallenge?.completed || false;
-  };
-
-  const handleStartChallenge = (challengeId: number) => {
-    const challenge = challenges.find(c => c.id === challengeId);
-    if (challenge) {
-    //   onStartChallenge(challengeId, challenge.title, challenge.room);
-    }
-  };
-
-  const handleLockedChallenge = (challengeId: number) => {
-    const previousChallenge = challenges.find(c => c.id === challengeId - 1);
-    if (previousChallenge) {
-      toast.error(`Esta sala está bloqueada`, {
-        description: `Debes completar "${previousChallenge.title}" (${previousChallenge.room}) para desbloquear esta sala.`,
-        duration: 4000,
-      });
-    }
-  };
+  const totalChallenges = roomStore.rooms.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50">
@@ -129,12 +54,12 @@ export function MuseumHome() {
                 <p className="text-sm text-purple-600">Explora y aprende</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 className="gap-2 text-purple-700 hover:bg-purple-50 hover:text-purple-900"
-                onClick={()=>{}}
+                onClick={() => {}}
               >
                 <User className="w-4 h-4" />
                 Mi Perfil
@@ -189,8 +114,12 @@ export function MuseumHome() {
                     <Star className="w-6 h-6 text-white fill-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-white text-sm mb-0.5">Puntos Acumulados</p>
-                    <p className="text-white text-3xl">{userStore.totalPoints}</p>
+                    <p className="text-white text-sm mb-0.5">
+                      Puntos Acumulados
+                    </p>
+                    <p className="text-white text-3xl">
+                      {userStore.totalPoints}
+                    </p>
                   </div>
                 </div>
 
@@ -201,7 +130,9 @@ export function MuseumHome() {
                   </div>
                   <div className="flex-1">
                     <p className="text-white text-sm mb-0.5">Posición</p>
-                    <p className="text-white text-3xl">{userStore.globalPosition}</p>
+                    <p className="text-white text-3xl">
+                      {userStore.globalPosition}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -215,19 +146,23 @@ export function MuseumHome() {
                 <Award className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="text-purple-800">Progreso en el Museo</h3>
-                  <p className="text-purple-600 text-sm">Tu avance en los retos</p>
+                  <p className="text-purple-600 text-sm">
+                    Tu avance en los retos
+                  </p>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-purple-600 text-sm">Retos Completados</span>
+                  <span className="text-purple-600 text-sm">
+                    Retos Completados
+                  </span>
                   <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex-shrink-0">
                     {0}/{totalChallenges}
                   </Badge>
                 </div>
                 <div className="w-full bg-purple-100 rounded-full h-2.5">
-                  <div 
+                  <div
                     className="bg-purple-600 h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${(0 / totalChallenges) * 100}%` }}
                   />
@@ -245,12 +180,20 @@ export function MuseumHome() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {challenges.map((challenge) => {
-              const isUnlocked = isChallengeUnlocked(challenge.id);
+            {roomStore.rooms.map((room, index) => {
               
+              let isUnlocked;
+              if (index === 0) {
+                isUnlocked = true;
+              } else if (roomStore.rooms[index - 1]?.completed) {
+                isUnlocked = true;
+              } else {
+                isUnlocked = false;
+              }
+
               return (
                 <Card
-                  key={challenge.id}
+                  key={room.id}
                   className="border-purple-100 shadow-lg bg-white"
                 >
                   <CardHeader className="pb-4">
@@ -258,20 +201,20 @@ export function MuseumHome() {
                       <Camera className="w-6 h-6 text-purple-600" />
                     </div>
                     <CardTitle className="text-purple-900">
-                      {challenge.title}
+                      {room.name}
                     </CardTitle>
                     <CardDescription className="text-purple-600">
-                      {challenge.room}
+                      {room.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Button
                       className={`w-full ${
                         isUnlocked
-                          ? 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700'
-                          : 'bg-gray-300 hover:bg-gray-400 cursor-pointer'
+                          ? "bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+                          : "bg-gray-300 hover:bg-gray-400 cursor-pointer"
                       }`}
-                      onClick={() => isUnlocked ? handleStartChallenge(challenge.id) : handleLockedChallenge(challenge.id)}
+                      onClick={() => {}}
                     >
                       Empezar reto
                     </Button>

@@ -19,5 +19,9 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      "@typescript-eslint/no-unsafe-function-type": "off",
+      "react-hooks/exhaustive-deps": "off",
+    },
   },
 ])

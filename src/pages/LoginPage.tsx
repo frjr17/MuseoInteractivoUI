@@ -1,30 +1,45 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LogIn, UserPlus, Mail, Lock, User } from "lucide-react";
 import { ForgotPassword } from "@/components/ForgotPassword";
-import { useAuthStore, type AuthState, type NonFunctionKeys } from "@/store/auth";
+import { useAuthStore, type authFormKeys } from "@/store/auth";
+import type { CheckedState } from "@radix-ui/react-checkbox";
 
 export default function LoginPage() {
-  const authStore = useAuthStore()
-  const [rememberMe, setRememberMe] = useState(true);
+  const authStore = useAuthStore();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement> | CheckedState
+  ) => {
+    let event;
+    if (Object.hasOwn(e as React.ChangeEvent<HTMLInputElement>, "target")) {
+      event = e as React.ChangeEvent<HTMLInputElement>;
+      authStore.setFormField(
+        event.target.name as authFormKeys,
+        event.target.value
+      );
+    } else {
+      event = e as CheckedState;
+      authStore.setFormField("rememberMe", event as boolean);
+    }
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    authStore.setFormField(e.target.name as NonFunctionKeys<AuthState>, e.target.value);
-    
-  }
-  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     // Simular login exitoso
     await authStore.login(authStore.email, authStore.password);
-   
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -50,8 +65,12 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-violet-700 rounded-2xl mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-purple-900 mb-2">¡Bienvenido al museo interactivo!</h1>
-          <p className="text-purple-700">Inicia sesión en tu cuenta o crea una nueva</p>
+          <h1 className="text-purple-900 mb-2">
+            ¡Bienvenido al museo interactivo!
+          </h1>
+          <p className="text-purple-700">
+            Inicia sesión en tu cuenta o crea una nueva
+          </p>
         </div>
 
         <Tabs defaultValue="login" className="w-full">
@@ -69,14 +88,20 @@ export default function LoginPage() {
           <TabsContent value="login">
             <Card className="border-purple-100 shadow-lg">
               <CardHeader>
-                <CardTitle className="text-purple-900">Inicia sesión en tu cuenta</CardTitle>
-                <CardDescription className="text-purple-600">Ingresa tus credenciales para acceder a tu cuenta</CardDescription>
+                <CardTitle className="text-purple-900">
+                  Inicia sesión en tu cuenta
+                </CardTitle>
+                <CardDescription className="text-purple-600">
+                  Ingresa tus credenciales para acceder a tu cuenta
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleLogin}>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email" className="text-purple-900">Correo Electrónico</Label>
+                      <Label htmlFor="login-email" className="text-purple-900">
+                        Correo Electrónico
+                      </Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
                         <Input
@@ -93,7 +118,12 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-purple-900">Contraseña</Label>
+                      <Label
+                        htmlFor="login-password"
+                        className="text-purple-900"
+                      >
+                        Contraseña
+                      </Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
                         <Input
@@ -113,8 +143,8 @@ export default function LoginPage() {
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="remember"
-                          checked={rememberMe}
-                          onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                          checked={authStore.rememberMe}
+                          onCheckedChange={handleChange}
                         />
                         <label
                           htmlFor="remember"
@@ -123,12 +153,19 @@ export default function LoginPage() {
                           Recuérdame
                         </label>
                       </div>
-                      <Button variant="link" className="p-0 h-auto text-sm text-purple-600 hover:text-purple-800" onClick={() => setShowForgotPassword(true)}>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-sm text-purple-600 hover:text-purple-800"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
                         ¿Olvidaste tu contraseña?
                       </Button>
                     </div>
 
-                    <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700">
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+                    >
                       Iniciar Sesión
                     </Button>
                   </div>
@@ -140,15 +177,24 @@ export default function LoginPage() {
           <TabsContent value="register">
             <Card className="border-purple-100 shadow-lg">
               <CardHeader>
-                <CardTitle className="text-purple-900">Crea una cuenta</CardTitle>
-                <CardDescription className="text-purple-600">Ingresa tu información para comenzar</CardDescription>
+                <CardTitle className="text-purple-900">
+                  Crea una cuenta
+                </CardTitle>
+                <CardDescription className="text-purple-600">
+                  Ingresa tu información para comenzar
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleRegister}>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="register-firstname" className="text-purple-900">Nombre</Label>
+                        <Label
+                          htmlFor="register-firstname"
+                          className="text-purple-900"
+                        >
+                          Nombre
+                        </Label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
                           <Input
@@ -165,7 +211,12 @@ export default function LoginPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="register-lastname" className="text-purple-900">Apellido</Label>
+                        <Label
+                          htmlFor="register-lastname"
+                          className="text-purple-900"
+                        >
+                          Apellido
+                        </Label>
                         <Input
                           id="register-lastname"
                           type="text"
@@ -180,7 +231,12 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-purple-900">Correo Electrónico</Label>
+                      <Label
+                        htmlFor="register-email"
+                        className="text-purple-900"
+                      >
+                        Correo Electrónico
+                      </Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
                         <Input
@@ -197,7 +253,12 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-purple-900">Contraseña</Label>
+                      <Label
+                        htmlFor="register-password"
+                        className="text-purple-900"
+                      >
+                        Contraseña
+                      </Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
                         <Input
@@ -214,7 +275,12 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-confirm-password" className="text-purple-900">Confirmar Contraseña</Label>
+                      <Label
+                        htmlFor="register-confirm-password"
+                        className="text-purple-900"
+                      >
+                        Confirmar Contraseña
+                      </Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
                         <Input
@@ -230,7 +296,10 @@ export default function LoginPage() {
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700">
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+                    >
                       Crear Cuenta
                     </Button>
                   </div>

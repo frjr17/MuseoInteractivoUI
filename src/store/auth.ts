@@ -6,8 +6,9 @@ export interface AuthState {
   email: string;
   password: string;
   confirmPassword: string;
+  rememberMe?: boolean;
   isLoading: boolean;
-  setFormField: (field: NonFunctionKeys<AuthState>, value: string) => void;
+  setFormField: (field: authFormKeys, value: string|boolean) => void;
   login: (email: string, password: string) => Promise<void>;
   register: (
     name: string,
@@ -22,8 +23,7 @@ export interface AuthState {
   logout: () => Promise<void>;
 }
 
- 
-export type NonFunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T];
+export type authFormKeys = 'name' | 'lastName' | 'email' | 'password' | 'confirmPassword' | 'rememberMe';
 // type StringKeys<T> = { [K in keyof T]: T[K] extends string ? K : never }[keyof T];
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -33,7 +33,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   password: "",
   confirmPassword: "",
   isLoading: false,
-  setFormField: (field: NonFunctionKeys<AuthState>, value: string) =>
+  rememberMe: false,
+  setFormField: (field: authFormKeys, value: string|boolean) =>
     set({ [field]: value }),
   login: async (email: string, password: string) => {
     // Implement login logic here

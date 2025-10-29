@@ -14,7 +14,7 @@ interface UserState {
   getUser: (token: string) => void;
 }
 
-export const useUserStore = create<UserState>(() => ({
+export const useUserStore = create<UserState>((set) => ({
   name: "",
   lastName: "",
   email: "",
@@ -28,5 +28,17 @@ export const useUserStore = create<UserState>(() => ({
   getUser: (token: string) => {
     // Implement get user logic here
     console.log(token);
+    set({ 
+      name: "Juan",
+      lastName: "Pérez",
+      email: "juan.perez@example.com",
+      sessionToken: token,
+      globalPosition: 5,
+      totalPoints: 1500,
+      role: "student",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isLoading: false
+    });
   }
 }));

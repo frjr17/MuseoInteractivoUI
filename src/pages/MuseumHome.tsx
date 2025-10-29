@@ -21,14 +21,19 @@ import {
 import { useUserStore } from "@/store/user";
 import { useAuthStore } from "@/store/auth";
 import { useRoomStore } from "@/store/room";
+import { Link } from "react-router";
 
 export function MuseumHome() {
   const userStore = useUserStore();
   const authStore = useAuthStore();
   const roomStore = useRoomStore();
+  const completedRooms = roomStore.rooms.filter(
+    (room) => room.completed
+  ).length;
 
   useEffect(() => {
     roomStore.getRooms();
+    userStore.getUser(userStore.sessionToken);
   }, []);
 
   const getInitials = () => {
@@ -158,13 +163,15 @@ export function MuseumHome() {
                     Retos Completados
                   </span>
                   <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex-shrink-0">
-                    {0}/{totalChallenges}
+                    {completedRooms}/{totalChallenges}
                   </Badge>
                 </div>
                 <div className="w-full bg-purple-100 rounded-full h-2.5">
                   <div
                     className="bg-purple-600 h-2.5 rounded-full transition-all duration-500"
-                    style={{ width: `${(0 / totalChallenges) * 100}%` }}
+                    style={{
+                      width: `${(completedRooms / totalChallenges) * 100}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -180,17 +187,7 @@ export function MuseumHome() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {roomStore.rooms.map((room, index) => {
-              
-              let isUnlocked;
-              if (index === 0) {
-                isUnlocked = true;
-              } else if (roomStore.rooms[index - 1]?.completed) {
-                isUnlocked = true;
-              } else {
-                isUnlocked = false;
-              }
-
+            {roomStore.rooms.map((room) => {
               return (
                 <Card
                   key={room.id}
@@ -208,16 +205,29 @@ export function MuseumHome() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button
-                      className={`w-full ${
-                        isUnlocked
-                          ? "bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
-                          : "bg-gray-300 hover:bg-gray-400 cursor-pointer"
-                      }`}
-                      onClick={() => {}}
-                    >
-                      Empezar reto
-                    </Button>
+                    {room.completed ? (
+                      <Button
+                        className={`w-full ${
+                          room.isUnlocked
+                            ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+                            : "bg-gray-300 hover:bg-gray-400 cursor-pointer"
+                        }`}
+                      >
+                        Reto Completado
+                      </Button>
+                    ) : (
+                      <Link to={room.isUnlocked ? `/rooms/${room.id}` : "#"}>
+                        <Button
+                          className={`w-full ${
+                            room.isUnlocked
+                              ? "bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+                              : "bg-gray-300 hover:bg-gray-400 cursor-pointer"
+                          }`}
+                        >
+                          Empezar reto
+                        </Button>
+                      </Link>
+                    )}
                   </CardContent>
                 </Card>
               );

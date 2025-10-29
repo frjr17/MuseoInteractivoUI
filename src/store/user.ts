@@ -5,20 +5,22 @@ interface UserState {
   lastName: string;
   email: string;
   sessionToken: string;
-  position: string;
+  globalPosition: number;
   role: string;
+  totalPoints?: number;
   createdAt: Date | null;
   updatedAt: Date | null;
   isLoading: boolean;
   getUser: (token: string) => void;
 }
 
-export const useUserStore = create<UserState>(() => ({
+export const useUserStore = create<UserState>((set) => ({
   name: "",
   lastName: "",
   email: "",
   sessionToken: "",
-  position: "",
+  globalPosition: 0,
+  totalPoints: 0,
   role: "",
   createdAt: null,
   updatedAt: null,
@@ -26,5 +28,17 @@ export const useUserStore = create<UserState>(() => ({
   getUser: (token: string) => {
     // Implement get user logic here
     console.log(token);
+    set({ 
+      name: "Juan",
+      lastName: "Pérez",
+      email: "juan.perez@example.com",
+      sessionToken: token,
+      globalPosition: 5,
+      totalPoints: 1500,
+      role: "student",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isLoading: false
+    });
   }
 }));

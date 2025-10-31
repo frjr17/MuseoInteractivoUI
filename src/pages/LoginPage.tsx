@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -15,12 +15,12 @@ import { LogIn, UserPlus, Mail, Lock, User } from "lucide-react";
 import { useAuthStore, type authFormKeys } from "@/store/auth";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { Link, useNavigate } from "react-router";
+import { useUserStore } from "@/store/user";
 
 export default function LoginPage() {
   const authStore = useAuthStore();
+  const userStore = useUserStore();
   const navigate = useNavigate();
-  
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | CheckedState
   ) => {
@@ -40,8 +40,13 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     // Simular login exitoso
-    await authStore.login(authStore.email, authStore.password);
-    navigate("/");
+    const signedInSuccessfully = await authStore.login(
+      authStore.email,
+      authStore.password
+    );
+    if (signedInSuccessfully) {
+      userStore.getUser();
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -54,8 +59,17 @@ export default function LoginPage() {
       authStore.password,
       authStore.confirmPassword
     );
-    navigate("/");
   };
+
+  useEffect(() => {
+    async function fetchUser() {
+      const isUser = await userStore.getUser();
+      if (isUser) {
+        navigate("/");
+      }
+    }
+    fetchUser();
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50 p-4">

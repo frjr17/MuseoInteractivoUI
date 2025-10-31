@@ -1,5 +1,7 @@
 import { create } from "zustand";
-
+import axios, { AxiosError } from "axios";
+import { toast } from "sonner";
+import { useUserStore } from "./user";
 export interface AuthState {
   name: string;
   lastName: string;
@@ -10,7 +12,7 @@ export interface AuthState {
   isLoading: boolean;
   resetCode: string;
   setFormField: (field: authFormKeys, value: string | boolean) => void;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
   register: (
     name: string,
     lastName: string,
@@ -37,7 +39,6 @@ export type authFormKeys =
   | "rememberMe"
   | "resetCode";
 
-
 export const useAuthStore = create<AuthState>((set) => ({
   name: "",
   lastName: "",
@@ -47,13 +48,32 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: false,
   rememberMe: true,
   resetCode: "",
+
   setFormField: (field: authFormKeys, value: string | boolean) =>
     set({ [field]: value }),
+
   login: async (email: string, password: string) => {
     // Implement login logic here
     set({ isLoading: true });
-    console.log(email, password);
+
+    try {
+      await axios.post(
+        "/api/auth/login",
+        { email, password },
+        { withCredentials: true }
+      );
+      toast.success("Login successful");
+      await useUserStore.getState().getUser();
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 401) {
+        toast.error("Invalid email or password");
+      }
+      return false
+    }
+    
     set({ isLoading: false });
+    return true;
   },
   register: async (
     name: string,
@@ -88,6 +108,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   logout: async () => {
     // Implement logout logic here
+    set({ isLoading: true });
+    await axios.post("/api/auth/logout", {}, { withCredentials: true });
+    useUserStore.setState({ id: "" , name: "", lastName: "", email: "", globalPosition: 0, role: "", totalPoints: 0, createdAt: null, updatedAt: null, isLoading: false });
+    set({ isLoading: false, name: "", lastName: "", email: "", password: "", confirmPassword: "" , rememberMe: true, resetCode: ""});
   },
   reset: () =>
     set({

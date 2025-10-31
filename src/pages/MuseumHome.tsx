@@ -33,7 +33,7 @@ export function MuseumHome() {
 
   useEffect(() => {
     roomStore.getRooms();
-    userStore.getUser(userStore.sessionToken);
+    userStore.getUser();
   }, []);
 
   const getInitials = () => {

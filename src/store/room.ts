@@ -20,7 +20,7 @@ export interface Room {
 }
 
 export interface Hint {
-  id: string;
+  id: number;
   roomId: string;
   title: string;
   description: string;

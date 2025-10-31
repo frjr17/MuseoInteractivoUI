@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import axios, { AxiosError } from "axios";
+import  { AxiosError } from "axios";
 import { toast } from "sonner";
 import { useUserStore } from "./user";
+import { axios } from "@/lib/utils";
 export interface AuthState {
   name: string;
   lastName: string;

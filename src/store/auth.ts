@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import  axios, { AxiosError } from "axios";
+import { persist } from "zustand/middleware";
+import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { useUserStore } from "./user";
 export interface AuthState {
@@ -20,12 +21,11 @@ export interface AuthState {
     password: string,
     confirmPassword: string
   ) => Promise<boolean>;
-  sendPasswordResetEmail: (email: string) => Promise<void>;
+  sendPasswordResetEmail: (email: string) => Promise<boolean>;
   verifyPasswordResetCode: (code: string) => Promise<boolean>;
   resetPassword: (
     newPassword: string,
-    confirmPassword: string
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   logout: () => Promise<void>;
   reset: () => void;
 }
@@ -39,7 +39,8 @@ export type authFormKeys =
   | "rememberMe"
   | "resetCode";
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>()(persist(
+(set, get) => ({
   name: "",
   lastName: "",
   email: "",
@@ -113,23 +114,62 @@ export const useAuthStore = create<AuthState>((set) => ({
   sendPasswordResetEmail: async (email: string) => {
     // Implement password reset email logic here
     set({ isLoading: true });
-    console.log(email);
+
+    try {
+      const response = await axios.post("/api/auth/forgot", { email });
+      if (response.data.status === "code_sent") {
+        toast.success("Código de restablecimiento enviado");
+      }
+    } catch {
+      toast.error("Error al enviar el correo de restablecimiento");
+      return false;
+    }
+
     set({ isLoading: false });
+    return true;
   },
 
   verifyPasswordResetCode: async (code: string) => {
     // Implement code verification logic here
     set({ isLoading: true });
-    console.log(code);
+    const { email } = get();
+    const response = await axios.post("/api/auth/verify-reset", {
+      code,
+      email,
+    });
+    if (response.data.status !== "code_valid") {
+      toast.error("Código inválido");
+      set({ isLoading: false });
+      return false;
+    }
+    toast.success("Código verificado");
+
     set({ isLoading: false });
     return true;
   },
-  resetPassword: async (newPassword: string, confirmPassword: string) => {
+
+  resetPassword: async (newPassword: string) => {
     // Implement password reset logic here
     set({ isLoading: true });
-    console.log(newPassword, confirmPassword);
+    try {
+      const response = await axios.post("/api/auth/reset",{
+        email: get().email,
+        new_password: newPassword,
+        code: get().resetCode
+      })
+      if (response.data.status !== "password_changed") {
+        toast.error("Error al cambiar la contraseña");
+        set({ isLoading: false });
+        return false;
+      }
+    } catch {
+      return false
+    }
+
     set({ isLoading: false });
+    return true;
   },
+
   logout: async () => {
     // Implement logout logic here
     set({ isLoading: true });
@@ -157,6 +197,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       resetCode: "",
     });
   },
+
   reset: () =>
     set({
       name: "",
@@ -168,4 +209,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       rememberMe: false,
       resetCode: "",
     }),
-}));
+}),{
+  name: "auth-storage"
+}
+));

@@ -23,13 +23,14 @@ import { useAuthStore } from "@/store/auth";
 import { useRoomStore } from "@/store/room";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
+import type { AxiosError } from "axios";
 
 export function MuseumHome() {
   const userStore = useUserStore();
   const authStore = useAuthStore();
   const roomStore = useRoomStore();
   const navigate = useNavigate();
-  
+
   const completedRooms = roomStore.rooms.filter(
     (room) => room.completed
   ).length;
@@ -39,13 +40,30 @@ export function MuseumHome() {
       authStore.logout();
       navigate("/sign");
     } catch {
-      toast.error("Error al cerrar sesión" );
+      toast.error("Error al cerrar sesión");
     }
-  }
+  };
 
   useEffect(() => {
     roomStore.getRooms();
     userStore.getUser();
+
+    async function fetchUser() {
+      try {
+        const isUser = await userStore.getUser();
+        if (!isUser) {
+          navigate("/sign");
+        }
+      } catch (e) {
+        const error = e as AxiosError;
+        if (error.response && error.response.status === 401) {
+          toast.error("Para entrar a esa página debes iniciar sesión primero.");
+        }
+        userStore.resetUser();
+        navigate("/sign");
+      }
+    }
+    fetchUser();
   }, []);
 
   const getInitials = () => {

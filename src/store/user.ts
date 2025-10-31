@@ -1,4 +1,4 @@
-import { axios } from "@/lib/utils";
+import axios from "axios";
 import { create } from "zustand";
 interface UserState {
   id: string;

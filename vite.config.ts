@@ -22,7 +22,10 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: API_URL,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '/'),
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       }
     }

@@ -26,25 +26,28 @@ export default function VerifyEmail() {
 
   const handleSendCode = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sending code to:", authStore.email);
     // Aquí iría la lógica para enviar el código
   };
 
-  const handleValidateCode = (e: React.FormEvent) => {
+  const handleValidateCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Validating code:", authStore.resetCode);
     // Aquí iría la lógica para validar el código
-
-    authStore.setFormField("email", "");
-    authStore.setFormField("resetCode", "");
-    
+    const codeValid = await authStore.verifyPasswordResetCode(
+      authStore.resetCode
+    );
+    if (!codeValid) {
+      return;
+    }
     navigate("/forgot-password/reset", {
       state: { previousLocation: location.pathname },
     });
   };
 
   useEffect(() => {
-    if (location.state?.previousLocation !== "/forgot-password") {
+    if (
+      location.state?.previousLocation !== "/forgot-password" ||
+      !authStore.email
+    ) {
       navigate("/forgot-password");
       return;
     }

@@ -12,24 +12,35 @@ import { Lock } from "lucide-react";
 import { Button } from "./ui/button";
 import { useLocation, useNavigate } from "react-router";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function ResetPassword() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     authStore.setFormField(name as authFormKeys, value);
   };
 
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (authStore.password !== authStore.confirmPassword) {
       alert("Las contraseñas no coinciden");
       return;
     }
-    console.log("Resetting password");
+    try {
+      const passwordResetedSuccessfully = await authStore.resetPassword(
+        authStore.password
+      );
+      if (!passwordResetedSuccessfully) {
+        toast.error("Error al cambiar la contraseña. Inténtalo de nuevo.");
+        return;
+      }
+    } catch {
+      toast.error("Error al cambiar la contraseña. Inténtalo de nuevo.");
+    }
     // Aquí iría la lógica para cambiar la contraseña
     navigate("/forgot-password/success");
   };

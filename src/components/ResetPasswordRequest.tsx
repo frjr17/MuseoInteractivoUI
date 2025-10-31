@@ -17,15 +17,16 @@ export default function ResetPasswordRequest() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSendCode = (e: React.FormEvent) => {
+  const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sending code to:", authStore.email);
     
     // Aquí iría la lógica para enviar el código
-    
-    navigate("/forgot-password/verify", {
-      state: { previousLocation: location.pathname },
-    });
+    const codeSent = await authStore.sendPasswordResetEmail(authStore.email);
+    if (codeSent) {
+      navigate("/forgot-password/verify", {
+        state: { previousLocation: location.pathname },
+      });
+    };
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +38,7 @@ export default function ResetPasswordRequest() {
     authStore.setFormField("email", "");
     navigate("/sign");
   };
+
   return (
     <Card className="border-purple-100 shadow-lg">
       <CardHeader>

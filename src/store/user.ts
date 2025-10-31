@@ -32,7 +32,7 @@ export const useUserStore = create<UserState>((set) => ({
     set({ isLoading: true });
     const response = await axios.get("/api/auth/me", { withCredentials: true });
     const userData = response.data;
-    console.log("Fetched user data:", userData);
+
     if (!userData.id) {
       set({ isLoading: false });
       return false;

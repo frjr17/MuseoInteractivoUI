@@ -4,16 +4,9 @@ import ResetPasswordRequest from "@/components/ResetPasswordRequest";
 import VerifyEmail from "@/components/VerifyEmail";
 import ResetPassword from "@/components/ResetPassword";
 import PasswordResetSuccess from "@/components/PasswordResetSuccess";
-import { useEffect } from "react";
-import { useAuthStore } from "@/store/auth";
 
 export function ForgotPassword() {
-  const authStore = useAuthStore();
-  useEffect(()=>{
-    return ()=>{
-      authStore.reset();
-    }
-  },[])
+ 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50 p-4">

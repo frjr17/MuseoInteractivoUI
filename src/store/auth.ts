@@ -19,7 +19,7 @@ export interface AuthState {
     email: string,
     password: string,
     confirmPassword: string
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
   verifyPasswordResetCode: (code: string) => Promise<boolean>;
   resetPassword: (
@@ -62,19 +62,23 @@ export const useAuthStore = create<AuthState>((set) => ({
         { email, password },
         { withCredentials: true }
       );
-      toast.success("Login successful");
+
+      toast.success("Inicio de sesión exitoso");
       await useUserStore.getState().getUser();
     } catch (error) {
       const axiosError = error as AxiosError;
+
       if (axiosError.response && axiosError.response.status === 401) {
-        toast.error("Invalid email or password");
+        toast.error("Correo o contraseña incorrectos");
       }
-      return false
+
+      return false;
     }
-    
+
     set({ isLoading: false });
     return true;
   },
+
   register: async (
     name: string,
     lastName: string,
@@ -84,15 +88,35 @@ export const useAuthStore = create<AuthState>((set) => ({
   ) => {
     // Implement registration logic here
     set({ isLoading: true });
-    console.log(name, lastName, email, password, confirmPassword);
+    try {
+      const response = await axios.post("/api/auth/register", {
+        nombre: name,
+        apellido: lastName,
+        email,
+        password,
+        confirmPassword,
+      });
+
+      if (response.status === 201) {
+        toast.success("Registro exitoso");
+        return true;
+      }
+    } catch {
+      toast.error("Error en el registro");
+      return false;
+    }
+
     set({ isLoading: false });
+    return false;
   },
+
   sendPasswordResetEmail: async (email: string) => {
     // Implement password reset email logic here
     set({ isLoading: true });
     console.log(email);
     set({ isLoading: false });
   },
+
   verifyPasswordResetCode: async (code: string) => {
     // Implement code verification logic here
     set({ isLoading: true });
@@ -110,8 +134,28 @@ export const useAuthStore = create<AuthState>((set) => ({
     // Implement logout logic here
     set({ isLoading: true });
     await axios.post("/api/auth/logout", {}, { withCredentials: true });
-    useUserStore.setState({ id: "" , name: "", lastName: "", email: "", globalPosition: 0, role: "", totalPoints: 0, createdAt: null, updatedAt: null, isLoading: false });
-    set({ isLoading: false, name: "", lastName: "", email: "", password: "", confirmPassword: "" , rememberMe: true, resetCode: ""});
+    useUserStore.setState({
+      id: "",
+      name: "",
+      lastName: "",
+      email: "",
+      globalPosition: 0,
+      role: "",
+      totalPoints: 0,
+      createdAt: null,
+      updatedAt: null,
+      isLoading: false,
+    });
+    set({
+      isLoading: false,
+      name: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      rememberMe: true,
+      resetCode: "",
+    });
   },
   reset: () =>
     set({

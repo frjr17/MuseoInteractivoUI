@@ -21,10 +21,12 @@ export default function LoginPage() {
   const authStore = useAuthStore();
   const userStore = useUserStore();
   const navigate = useNavigate();
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement> | CheckedState
   ) => {
     let event;
+
     if (Object.hasOwn(e as React.ChangeEvent<HTMLInputElement>, "target")) {
       event = e as React.ChangeEvent<HTMLInputElement>;
       authStore.setFormField(
@@ -44,21 +46,28 @@ export default function LoginPage() {
       authStore.email,
       authStore.password
     );
+
     if (signedInSuccessfully) {
       userStore.getUser();
+      navigate("/");
     }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     // Simular registro exitoso
-    await authStore.register(
+    const registeredSuccessfully = await authStore.register(
       authStore.name,
       authStore.lastName,
       authStore.email,
       authStore.password,
       authStore.confirmPassword
     );
+
+    if (registeredSuccessfully) {
+      userStore.getUser();
+      navigate("/");
+    }
   };
 
   useEffect(() => {

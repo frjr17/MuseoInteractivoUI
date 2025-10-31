@@ -12,6 +12,7 @@ interface UserState {
   updatedAt: Date | null;
   isLoading: boolean;
   getUser: () => Promise<boolean>;
+  resetUser: () => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -25,7 +26,7 @@ export const useUserStore = create<UserState>((set) => ({
   createdAt: null,
   updatedAt: null,
   isLoading: false,
-  
+
   getUser: async () => {
     // Implement get user logic here
     set({ isLoading: true });
@@ -36,7 +37,7 @@ export const useUserStore = create<UserState>((set) => ({
       set({ isLoading: false });
       return false;
     }
-    
+
     set({
       name: userData.nombre,
       lastName: userData.apellido,
@@ -48,9 +49,22 @@ export const useUserStore = create<UserState>((set) => ({
       updatedAt: new Date(userData.updatedAt),
     });
 
-    
     // After fetching user data
     set({ isLoading: false });
     return true;
+  },
+
+  resetUser: () => {
+    set({
+      id: "",
+      name: "",
+      lastName: "",
+      email: "",
+      globalPosition: 0,
+      totalPoints: 0,
+      role: "",
+      createdAt: null,
+      updatedAt: null,
+    });
   },
 }));

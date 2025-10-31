@@ -5,6 +5,7 @@ import { MuseumHome } from "./pages/MuseumHome";
 import { useEffect } from "react";
 import { useUserStore } from "./store/user";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 function App() {
   const userStore = useUserStore();
@@ -20,8 +21,10 @@ function App() {
       } catch (e) {
         const error = e as AxiosError;
         if(error.response && error.response.status === 401) {
-          navigate("/sign");
+          toast.error("Sesión expirada. Por favor, inicia sesión de nuevo.");
         }
+        userStore.resetUser();
+        navigate("/sign");
       }
     }
     fetchUser();

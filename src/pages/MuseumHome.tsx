@@ -1,23 +1,9 @@
 import { useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  User,
-  LogOut,
-  Trophy,
-  Camera,
-  Sparkles,
-  Star,
-  Award,
-} from "lucide-react";
+import { User, LogOut, Trophy, Camera, Sparkles, Star, Award } from "lucide-react";
 import { useUserStore } from "@/store/user";
 import { useAuthStore } from "@/store/auth";
 import { useRoomStore } from "@/store/room";
@@ -31,9 +17,7 @@ export function MuseumHome() {
   const roomStore = useRoomStore();
   const navigate = useNavigate();
 
-  const completedRooms = roomStore.rooms.filter(
-    (room) => room.completed
-  ).length;
+  const completedRooms = roomStore.rooms.filter((room) => room.completed).length;
 
   const logout = () => {
     try {
@@ -67,9 +51,7 @@ export function MuseumHome() {
   }, []);
 
   const getInitials = () => {
-    return `${userStore.name.charAt(0)}${userStore.lastName.charAt(
-      0
-    )}`.toUpperCase();
+    return `${userStore.name.charAt(0)}${userStore.lastName.charAt(0)}`.toUpperCase();
   };
 
   const totalChallenges = roomStore.rooms.length;
@@ -91,14 +73,16 @@ export function MuseumHome() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                className="gap-2 text-purple-700 hover:bg-purple-50 hover:text-purple-900"
-                onClick={() => {}}
-              >
-                <User className="w-4 h-4" />
-                Mi Perfil
-              </Button>
+              <Link to="/profile">
+                <Button
+                  variant="ghost"
+                  className="gap-2 text-purple-700 hover:bg-purple-50 hover:text-purple-900"
+                  onClick={() => {}}
+                >
+                  <User className="w-4 h-4" />
+                  Mi Perfil
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="icon"
@@ -128,9 +112,7 @@ export function MuseumHome() {
                   <h2 className="text-purple-900 mb-1">
                     ¡Bienvenido, {userStore.name} {userStore.lastName}!
                   </h2>
-                  <p className="text-purple-600">
-                    Continúa explorando las maravillas del museo
-                  </p>
+                  <p className="text-purple-600">Continúa explorando las maravillas del museo</p>
                 </div>
               </div>
             </CardContent>
@@ -149,12 +131,8 @@ export function MuseumHome() {
                     <Star className="w-6 h-6 text-white fill-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-white text-sm mb-0.5">
-                      Puntos Acumulados
-                    </p>
-                    <p className="text-white text-3xl">
-                      {userStore.totalPoints}
-                    </p>
+                    <p className="text-white text-sm mb-0.5">Puntos Acumulados</p>
+                    <p className="text-white text-3xl">{userStore.totalPoints}</p>
                   </div>
                 </div>
 
@@ -165,9 +143,7 @@ export function MuseumHome() {
                   </div>
                   <div className="flex-1">
                     <p className="text-white text-sm mb-0.5">Posición</p>
-                    <p className="text-white text-3xl">
-                      {userStore.globalPosition}
-                    </p>
+                    <p className="text-white text-3xl">{userStore.globalPosition}</p>
                   </div>
                 </div>
               </div>
@@ -181,17 +157,13 @@ export function MuseumHome() {
                 <Award className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="text-purple-800">Progreso en el Museo</h3>
-                  <p className="text-purple-600 text-sm">
-                    Tu avance en los retos
-                  </p>
+                  <p className="text-purple-600 text-sm">Tu avance en los retos</p>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-purple-600 text-sm">
-                    Retos Completados
-                  </span>
+                  <span className="text-purple-600 text-sm">Retos Completados</span>
                   <Badge className="bg-purple-600 text-white hover:bg-purple-700 flex-shrink-0">
                     {completedRooms}/{totalChallenges}
                   </Badge>
@@ -219,20 +191,13 @@ export function MuseumHome() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {roomStore.rooms.map((room) => {
               return (
-                <Card
-                  key={room.id}
-                  className="border-purple-100 shadow-lg bg-white"
-                >
+                <Card key={room.id} className="border-purple-100 shadow-lg bg-white">
                   <CardHeader className="pb-4">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-100 mb-4">
                       <Camera className="w-6 h-6 text-purple-600" />
                     </div>
-                    <CardTitle className="text-purple-900">
-                      {room.name}
-                    </CardTitle>
-                    <CardDescription className="text-purple-600">
-                      {room.description}
-                    </CardDescription>
+                    <CardTitle className="text-purple-900">{room.name}</CardTitle>
+                    <CardDescription className="text-purple-600">{room.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     {room.completed ? (

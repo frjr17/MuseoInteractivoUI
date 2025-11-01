@@ -206,7 +206,7 @@ export const useAuthStore = create<AuthState>()(persist(
       password: "",
       confirmPassword: "",
       isLoading: false,
-      rememberMe: false,
+      rememberMe: true,
       resetCode: "",
     }),
 }),{

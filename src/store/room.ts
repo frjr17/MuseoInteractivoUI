@@ -1,76 +1,75 @@
+import axios from "axios";
 import { create } from "zustand";
 
 export interface RoomState {
   rooms: Array<Room>;
+  room?: Room;
   getRooms: () => void;
+  getRoomById: (id: number) => void;
+  submitSurvey: (payload: { room_id: number; hint_id: number; email?: string }) => Promise<void>;
+  isLoading: boolean;
 }
 
 export interface Room {
   id: number;
   name: string;
-  description: string;
   imageUrl?: string;
   hints: Array<Hint>;
   completed: boolean;
   isUnlocked?: boolean;
+  final_code: string;
 }
 
 export interface Hint {
-  id: string;
+  id: number;
   roomId: string;
   title: string;
-  description: string;
+  limeSurveyUrl?: string;
   imageUrl?: string;
   completed: boolean;
 }
 
 export const useRoomStore = create<RoomState>((set) => ({
   rooms: [],
-  getRooms: () => {
+  isLoading: false,
+  getRooms: async () => {
+    set({ isLoading: true });
     // Implement get rooms logic here
+    try {
+      const response = await axios.get("/api/rooms", { withCredentials: true });
+      set({ rooms: response.data });
+      console.log("Rooms fetched:", response.data);
+    } catch {
+      set({ rooms: [] });
+    }
     set({
-      rooms: [
-      {
-        id: 1,
-        name: "El Secreto del Canal",
-        description: "Sala 1",
-        hints: [],
-        completed: true,
-        isUnlocked: true,
-      },
-      {
-        id: 2,
-        name: "Leyendas panameñas",
-        description: "Sala 2",
-        hints: [],
-        completed: true,
-        isUnlocked: true,
-      },
-      {
-        id: 3,
-        name: "El tesoro verde de Panamá",
-        description: "Sala 3",
-        hints: [],
-        completed: false,
-        isUnlocked: true,
-      },
-      {
-        id: 4,
-        name: "Sabores y colores de Panamá",
-        description: "Sala 4",
-        hints: [],
-        completed: false,
-        isUnlocked: false,
-      },
-      {
-        id: 5,
-        name: "Las llaves de la ciudad",
-        description: "Sala 5",
-        hints: [],
-        completed: false,
-        isUnlocked: false,
-      },
-      ],
+      isLoading: false,
     });
+  },
+
+  getRoomById: async (id: number) => {
+    set({ isLoading: true });
+
+    try {
+      const response = await axios.get(`/api/rooms/${id}`, { withCredentials: true });
+      set({ room: response.data });
+    } catch {
+      set({ room: undefined });
+    }
+
+    set({ isLoading: false });
+  },
+  submitSurvey: async (payload: { room_id: number; hint_id: number; email?: string }) => {
+    // POST to backend endpoint to mark room/hint complete or submit survey
+    const res = await axios.post(`/api/rooms/complete`, payload, { withCredentials: true });
+    // Optionally refresh the room data after completion
+    if (res?.data && payload.room_id) {
+      try {
+        const updated = await axios.get(`/api/rooms/${payload.room_id}`, { withCredentials: true });
+        set({ room: updated.data });
+      } catch {
+        // ignore refresh errors
+      }
+    }
   },
 }));

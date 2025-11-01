@@ -6,7 +6,7 @@ import { QRScanner } from "@/components/QRScanner";
 import { Sparkles, Lock, ArrowRight, Eye } from "lucide-react";
 import { useRoomStore, type Hint } from "@/store/room";
 import { useNavigate, useParams } from "react-router";
-import { cn } from "@/lib/utils";
+import { cn, getRoomHintId } from "@/lib/utils";
 
 export default function RoomView() {
   const { id } = useParams();
@@ -17,7 +17,8 @@ export default function RoomView() {
   const totalHints = room?.hints.length as number;
   const roomTitle = room?.name;
   const roomDescription = "Reto de la Sala " + roomId;
-  
+
+
   const goBack = () => {
     navigate(-1);
   };
@@ -132,18 +133,18 @@ export default function RoomView() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
                         <span className="w-2 h-2 bg-purple-600 rounded-full mr-3 flex-shrink-0"></span>
-                        {hint.id === 1 || room.hints[idx - 1].completed ? (
+                        {getRoomHintId(roomId, hint.id) === 1 || room.hints[idx - 1].completed ? (
                           <button
                             onClick={() => handleHintClick(hint.id)}
                             className="text-purple-600 hover:text-purple-800 transition-colors text-left flex items-center gap-2"
                           >
-                            Pista {hint.id}
+                            Pista {getRoomHintId(roomId, hint.id)}
                             <ArrowRight className="w-4 h-4" />
                           </button>
                         ) : hint.completed ? (
-                          <span className="text-purple-600 flex items-center gap-2">Pista {hint.id}</span>
+                          <span className="text-purple-600 flex items-center gap-2">Pista {getRoomHintId(roomId, hint.id)}</span>
                         ) : (
-                          <span className="text-gray-300 flex items-center gap-2">Pista {hint.id}</span>
+                          <span className="text-gray-300 flex items-center gap-2">Pista {getRoomHintId(roomId, hint.id)}</span>
                         )}
                       </div>
 
@@ -158,7 +159,7 @@ export default function RoomView() {
                         <div className="w-full max-w-[180px] aspect-[4/3] rounded-lg overflow-hidden border-2 border-purple-100 shadow-sm">
                           <img
                             src={hint.imageUrl}
-                            alt={`Pista ${hint.id} - ${roomDescription}`}
+                            alt={`Pista ${getRoomHintId(roomId, hint.id)} - ${roomDescription}`}
                             className="w-full h-full object-cover"
                           />
                         </div>

@@ -1,8 +1,11 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
+export const getRoomHintId = (roomId: number, hintIndex: number) => {
+  return hintIndex - 5 * (roomId - 1);
+};
 
-export const apiBaseUrl = import.meta.env.VITE_API_URL
+export const apiBaseUrl = import.meta.env.VITE_API_URL;

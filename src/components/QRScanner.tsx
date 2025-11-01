@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { X, QrCode, Camera, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { getRoomHintId } from "@/lib/utils";
 
 interface QRScannerProps {
   onScan: (data: string) => void;
@@ -235,7 +236,7 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <QrCode className="w-6 h-6 text-purple-600" />
-              <h3 className="text-purple-900">Pista #{hintNumber}</h3>
+              <h3 className="text-purple-900">Pista #{getRoomHintId(roomId, hintNumber)}</h3>
             </div>
             <Button onClick={handleClose} variant="ghost" size="sm" className="text-purple-600 hover:text-purple-800">
               <X className="w-5 h-5" />

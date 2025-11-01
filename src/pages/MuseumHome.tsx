@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -137,7 +137,7 @@ export function MuseumHome() {
                 </div>
 
                 {/* Posición */}
-                <div className="flex items-center gap-4">
+                {/* <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-white/25 flex items-center justify-center flex-shrink-0">
                     <Trophy className="w-6 h-6 text-white" />
                   </div>
@@ -145,7 +145,7 @@ export function MuseumHome() {
                     <p className="text-white text-sm mb-0.5">Posición</p>
                     <p className="text-white text-3xl">{userStore.globalPosition}</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
@@ -197,7 +197,6 @@ export function MuseumHome() {
                       <Camera className="w-6 h-6 text-purple-600" />
                     </div>
                     <CardTitle className="text-purple-900">{room.name}</CardTitle>
-                    <CardDescription className="text-purple-600">{room.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     {room.completed ? (

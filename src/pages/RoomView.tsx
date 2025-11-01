@@ -7,6 +7,7 @@ import { Sparkles, Lock, ArrowRight, Eye } from "lucide-react";
 import { useRoomStore, type Hint } from "@/store/room";
 import { useNavigate, useParams } from "react-router";
 import { cn, getRoomHintId } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function RoomView() {
   const { id } = useParams();
@@ -18,13 +19,8 @@ export default function RoomView() {
   const roomTitle = room?.name;
   const roomDescription = "Reto de la Sala " + roomId;
 
-
-  const goBack = () => {
-    navigate(-1);
-  };
-
-  const onComplete = (points: number) => {
-    console.log(`Reto completado. Puntos ganados: ${points}`);
+  const goToMuseumHome = () => {
+    navigate("/");
   };
 
   useEffect(() => {
@@ -36,7 +32,7 @@ export default function RoomView() {
   const [showFinalCode, setShowFinalCode] = useState(false);
 
   const completedCount = room?.hints.filter((c) => c.completed).length as number;
-  const finalCode = `CODIGO-FINAL-SALA-${roomId}`;
+  const finalCode = `${room?.final_code}`;
 
   const handleHintClick = (hintId: number) => {
     const hint = room?.hints.find((h) => h.id === hintId) as Hint;
@@ -75,14 +71,17 @@ export default function RoomView() {
         description: `Has ganado ${pointsEarned} puntos`,
         duration: 4000,
       });
-
-      setTimeout(() => {
-        // Limpiar el estado guardado
-        localStorage.removeItem(`challenge-${roomId}-clues`);
-        onComplete(pointsEarned);
-      }, 3000);
     }
-  };
+  };  
+  
+  if (roomStore.isLoading || !room) {
+    return (
+          <div className="flex max-w-7xl w-full h-screen items-center align-center">
+            <Spinner className="size-8" />
+          </div>
+        );
+        
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50">
@@ -102,7 +101,7 @@ export default function RoomView() {
             </div>
 
             <Button
-              onClick={goBack}
+              onClick={goToMuseumHome}
               className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white"
             >
               Volver al Museo
@@ -127,13 +126,16 @@ export default function RoomView() {
               {room?.hints.map((hint, idx) => (
                 <div
                   key={hint.id}
-                  className={cn("relative bg-white border-l-4 border-purple-600 rounded-lg shadow-sm overflow-hidden", hint.completed ? "border-green-600" : "border-purple-600")}
+                  className={cn(
+                    "relative bg-white border-l-4 border-purple-600 rounded-lg shadow-sm overflow-hidden",
+                    hint.completed ? "border-green-600" : "border-purple-600"
+                  )}
                 >
-                  <div className="p-4">
+                  <div className="p-4 flex justify-between items-center">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
                         <span className="w-2 h-2 bg-purple-600 rounded-full mr-3 flex-shrink-0"></span>
-                        {getRoomHintId(roomId, hint.id) === 1 || room.hints[idx - 1].completed ? (
+                        {getRoomHintId(roomId, hint.id) === 1 || room?.hints[idx - 1]?.completed ? (
                           <button
                             onClick={() => handleHintClick(hint.id)}
                             className="text-purple-600 hover:text-purple-800 transition-colors text-left flex items-center gap-2"
@@ -142,29 +144,34 @@ export default function RoomView() {
                             <ArrowRight className="w-4 h-4" />
                           </button>
                         ) : hint.completed ? (
-                          <span className="text-purple-600 flex items-center gap-2">Pista {getRoomHintId(roomId, hint.id)}</span>
+                          <span className="text-purple-600 flex items-center gap-2">
+                            Pista {getRoomHintId(roomId, hint.id)}
+                          </span>
                         ) : (
-                          <span className="text-gray-300 flex items-center gap-2">Pista {getRoomHintId(roomId, hint.id)}</span>
+                          <span className="text-gray-300 flex items-center gap-2">
+                            Pista {getRoomHintId(roomId, hint.id)}
+                          </span>
                         )}
                       </div>
 
-                      <div className="ml-4">
-                        <Lock className={`w-4 h-4 ${hint.completed ? "text-gray-300" : "text-purple-300"}`} />
-                      </div>
+                      
                     </div>
 
                     {/* Image below each clue */}
                     {hint.completed && (
                       <div className="mt-4 pl-5">
-                        <div className="w-full max-w-[180px] aspect-[4/3] rounded-lg overflow-hidden border-2 border-purple-100 shadow-sm">
+                        <div className="w-full max-w-[180px] aspect-[1/1] rounded-lg overflow-hidden border-2 border-purple-100 shadow-sm">
                           <img
                             src={hint.imageUrl}
                             alt={`Pista ${getRoomHintId(roomId, hint.id)} - ${roomDescription}`}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover "
                           />
                         </div>
                       </div>
                     )}
+                    <div className="ml-4">
+                        <Lock className={`w-4 h-4 ${hint.completed ? "text-gray-300" : "text-purple-300"}`} />
+                      </div>
                   </div>
                 </div>
               ))}

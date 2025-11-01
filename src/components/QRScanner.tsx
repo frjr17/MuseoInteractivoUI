@@ -7,6 +7,8 @@ import { Label } from "./ui/label";
 import { X, QrCode, Camera, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { getRoomHintId } from "@/lib/utils";
+import { useRoomStore } from "@/store/room";
+import { useUserStore } from "@/store/user";
 
 interface QRScannerProps {
   onScan: (data: string) => void;
@@ -21,45 +23,10 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
   const [manualCode, setManualCode] = useState("");
   const [showScanner, setShowScanner] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const roomStore = useRoomStore();
+  const { room } = roomStore;
 
-  // Códigos válidos por sala y pista
-  const validCodes: Record<number, Record<number, string>> = {
-    1: {
-      1: "CANAL001",
-      2: "CANAL002",
-      3: "CANAL003",
-      4: "CANAL004",
-      5: "CANAL005",
-    },
-    2: {
-      1: "FOLK001",
-      2: "FOLK002",
-      3: "FOLK003",
-      4: "FOLK004",
-      5: "FOLK005",
-    },
-    3: {
-      1: "WILD001",
-      2: "WILD002",
-      3: "WILD003",
-      4: "WILD004",
-      5: "WILD005",
-    },
-    4: {
-      1: "FOOD001",
-      2: "FOOD002",
-      3: "FOOD003",
-      4: "FOOD004",
-      5: "FOOD005",
-    },
-    5: {
-      1: "ARCH001",
-      2: "ARCH002",
-      3: "ARCH003",
-      4: "ARCH004",
-      5: "ARCH005",
-    },
-  };
+  const userStore = useUserStore();
 
  
   useEffect(() => {
@@ -179,15 +146,14 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
 
   const validateAndRedirect = (code: string) => {
     // Verificar si el código es válido para esta sala y pista
-    const expectedCode = validCodes[roomId]?.[hintNumber];
+    const expectedCode = `S${roomId}P${getRoomHintId(roomId, hintNumber)}`;
 
     if (code.toUpperCase() === expectedCode) {
       // Código correcto - crear URL de pregunta externa
-      const questionUrl = `${window.location.origin}?room=${roomId}&hint=${hintNumber}`;
+      const hint = room?.hints.find((h) => h.id === hintNumber);
+      const encodedUrl = encodeURIComponent(window.location.origin + `/survey`);
+      const questionUrl = `${hint?.limeSurveyUrl}?${expectedCode}C=${userStore.email}&${expectedCode}E=${encodedUrl}`;
       onScan(questionUrl);
-      toast.success("Código correcto", {
-        description: "Redirigiendo a la pregunta...",
-      });
     } else {
       toast.error("Código incorrecto", {
         description: "Intenta de nuevo con el código correcto",

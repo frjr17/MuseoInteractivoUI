@@ -13,18 +13,18 @@ export interface RoomState {
 export interface Room {
   id: number;
   name: string;
-  description: string;
   imageUrl?: string;
   hints: Array<Hint>;
   completed: boolean;
   isUnlocked?: boolean;
+  final_code: string;
 }
 
 export interface Hint {
   id: number;
   roomId: string;
   title: string;
-  description: string;
+  limeSurveyUrl?: string;
   imageUrl?: string;
   completed: boolean;
 }

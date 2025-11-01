@@ -6,6 +6,7 @@ export interface RoomState {
   room?: Room;
   getRooms: () => void;
   getRoomById: (id: number) => void;
+  submitSurvey: (payload: { room_id: number; hint_id: number; email?: string }) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -57,5 +58,18 @@ export const useRoomStore = create<RoomState>((set) => ({
     }
 
     set({ isLoading: false });
+  },
+  submitSurvey: async (payload: { room_id: number; hint_id: number; email?: string }) => {
+    // POST to backend endpoint to mark room/hint complete or submit survey
+    const res = await axios.post(`/api/rooms/complete`, payload, { withCredentials: true });
+    // Optionally refresh the room data after completion
+    if (res?.data && payload.room_id) {
+      try {
+        const updated = await axios.get(`/api/rooms/${payload.room_id}`, { withCredentials: true });
+        set({ room: updated.data });
+      } catch {
+        // ignore refresh errors
+      }
+    }
   },
 }));

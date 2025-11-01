@@ -6,6 +6,7 @@ import { QRScanner } from "@/components/QRScanner";
 import { Sparkles, Lock, ArrowRight, Eye } from "lucide-react";
 import { useRoomStore, type Hint } from "@/store/room";
 import { useNavigate, useParams } from "react-router";
+import { cn } from "@/lib/utils";
 
 export default function RoomView() {
   const { id } = useParams();
@@ -125,7 +126,7 @@ export default function RoomView() {
               {room?.hints.map((hint, idx) => (
                 <div
                   key={hint.id}
-                  className="relative bg-white border-l-4 border-purple-600 rounded-lg shadow-sm overflow-hidden"
+                  className={cn("relative bg-white border-l-4 border-purple-600 rounded-lg shadow-sm overflow-hidden", hint.completed ? "border-green-600" : "border-purple-600")}
                 >
                   <div className="p-4">
                     <div className="flex items-center justify-between">

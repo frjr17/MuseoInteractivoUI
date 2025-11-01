@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/lib/api";
 import { create } from "zustand";
 interface UserState {
   id: string;
@@ -30,7 +30,7 @@ export const useUserStore = create<UserState>((set) => ({
   getUser: async () => {
     // Implement get user logic here
     set({ isLoading: true });
-    const response = await axios.get("/api/auth/me", { withCredentials: true });
+  const response = await api.get("/auth/me", { withCredentials: true });
     const userData = response.data;
 
     if (!userData.id) {

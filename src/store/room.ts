@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/lib/api";
 import { create } from "zustand";
 
 export interface RoomState {
@@ -6,7 +6,7 @@ export interface RoomState {
   room?: Room;
   getRooms: () => void;
   getRoomById: (id: number) => void;
-  submitSurvey: (payload: { room_id: number; hint_id: number; email?: string }) => Promise<void>;
+  submitSurvey: (payload: { room_id: number;hint_id: number; email?: string }) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -36,7 +36,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     set({ isLoading: true });
     // Implement get rooms logic here
     try {
-      const response = await axios.get("/api/rooms", { withCredentials: true });
+  const response = await api.get("/rooms", { withCredentials: true });
       set({ rooms: response.data });
       console.log("Rooms fetched:", response.data);
     } catch {
@@ -51,7 +51,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const response = await axios.get(`/api/rooms/${id}`, { withCredentials: true });
+  const response = await api.get(`/rooms/${id}`, { withCredentials: true });
       set({ room: response.data });
     } catch {
       set({ room: undefined });
@@ -61,11 +61,18 @@ export const useRoomStore = create<RoomState>((set) => ({
   },
   submitSurvey: async (payload: { room_id: number; hint_id: number; email?: string }) => {
     // POST to backend endpoint to mark room/hint complete or submit survey
-    const res = await axios.post(`/api/rooms/complete`, payload, { withCredentials: true });
+    // Map to backend expected keys if required (convert camelCase to snake_case)
+    const backendPayload = {
+      room_id: payload.room_id,
+      hint_id: payload.hint_id,
+      ...(payload.email ? { email: payload.email } : {}),
+    };
+
+  const res = await api.post(`/rooms/complete`, backendPayload, { withCredentials: true });
     // Optionally refresh the room data after completion
     if (res?.data && payload.room_id) {
       try {
-        const updated = await axios.get(`/api/rooms/${payload.room_id}`, { withCredentials: true });
+  const updated = await api.get(`/rooms/${payload.room_id}`, { withCredentials: true });
         set({ room: updated.data });
       } catch {
         // ignore refresh errors

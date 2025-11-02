@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "serve -s dist"
+    "start": "vite start --host"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",

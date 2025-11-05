@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {  Mail, User } from "lucide-react";
+import { Mail, User } from "lucide-react";
 import { useUserStore } from "@/store/user";
 import Header from "@/components/Header";
 
@@ -13,7 +13,6 @@ export function UserProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50">
-      {/* Header */}
       <Header />
 
       {/* Main Content */}

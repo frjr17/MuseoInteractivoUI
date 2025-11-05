@@ -14,18 +14,25 @@ function App() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+
   useEffect(() => {
     (async () => {
       let isUser = false;
+
       try {
         isUser = await userStore.getUser();
-      } catch { /* empty */ }
-      if (!isUser && !location.pathname.startsWith("/sign") && !location.pathname.startsWith("/forgot-password")) {
-        authStore.reset()
+      } catch {
+        /* empty */
+      }
+
+      const isSignPages = location.pathname.startsWith("/sign") || location.pathname.startsWith("/forgot-password");
+      if (!isUser && !isSignPages) {
+        authStore.reset();
         navigate("/sign");
       }
     })();
   }, []);
+
   return (
     <Routes>
       <Route path="/" element={<MuseumHome />} />

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,6 @@ import { useAuthStore } from "@/store/auth";
 import { useRoomStore } from "@/store/room";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
-import type { AxiosError } from "axios";
 
 export function MuseumHome() {
   const userStore = useUserStore();
@@ -18,6 +17,7 @@ export function MuseumHome() {
   const navigate = useNavigate();
 
   const completedRooms = roomStore.rooms.filter((room) => room.completed).length;
+  const totalChallenges = roomStore.rooms.length;
 
   const logout = () => {
     try {
@@ -30,31 +30,11 @@ export function MuseumHome() {
 
   useEffect(() => {
     roomStore.getRooms();
-    userStore.getUser();
-
-    async function fetchUser() {
-      try {
-        const isUser = await userStore.getUser();
-        if (!isUser) {
-          navigate("/sign");
-        }
-      } catch (e) {
-        const error = e as AxiosError;
-        if (error.response && error.response.status === 401) {
-          toast.error("Para entrar a esa página debes iniciar sesión primero.");
-        }
-        userStore.resetUser();
-        navigate("/sign");
-      }
-    }
-    fetchUser();
   }, []);
 
   const getInitials = () => {
     return `${userStore.name.charAt(0)}${userStore.lastName.charAt(0)}`.toUpperCase();
   };
-
-  const totalChallenges = roomStore.rooms.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50">

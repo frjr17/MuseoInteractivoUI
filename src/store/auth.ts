@@ -52,8 +52,6 @@ export const useAuthStore = create<AuthState>()(
           await api.post("/auth/login", { email, password });
 
           toast.success("Inicio de sesión exitoso");
-
-          await useUserStore.getState().getUser();
         } catch (error) {
           const axiosError = error as AxiosError<{ error: string }>;
 
@@ -184,6 +182,7 @@ export const useAuthStore = create<AuthState>()(
 
           if (response.data.status === "password_changed") {
             toast.success("Contraseña cambiada con éxito");
+            useAuthStore.getState().reset();
           }
         } catch (error) {
           const axiosError = error as AxiosError<{ error: string }>;

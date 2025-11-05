@@ -58,7 +58,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     (async () => {
-      const isUser = await userStore.getUser();
+      const isUser = await userStore.id.length;
+
       if (isUser) {
         navigate("/");
       }

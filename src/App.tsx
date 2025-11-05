@@ -19,11 +19,7 @@ function App() {
     (async () => {
       let isUser = false;
 
-      try {
-        isUser = await userStore.getUser();
-      } catch {
-        /* empty */
-      }
+      isUser = await userStore.getUser();
 
       const isSignPages = location.pathname.startsWith("/sign") || location.pathname.startsWith("/forgot-password");
       if (!isUser && !isSignPages) {

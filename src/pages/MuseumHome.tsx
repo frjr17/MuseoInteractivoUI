@@ -19,9 +19,10 @@ export function MuseumHome() {
   const completedRooms = roomStore.rooms.filter((room) => room.completed).length;
   const totalChallenges = roomStore.rooms.length;
 
-  const logout = () => {
+  const logout = async () => {
     try {
-      authStore.logout();
+      await authStore.logout();
+
       navigate("/sign");
     } catch {
       toast.error("Error al cerrar sesión");

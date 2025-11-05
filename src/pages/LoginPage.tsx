@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -22,17 +16,12 @@ export default function LoginPage() {
   const userStore = useUserStore();
   const navigate = useNavigate();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | CheckedState
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | CheckedState) => {
     let event;
 
     if (Object.hasOwn(e as React.ChangeEvent<HTMLInputElement>, "target")) {
       event = e as React.ChangeEvent<HTMLInputElement>;
-      authStore.setFormField(
-        event.target.name as authFormKeys,
-        event.target.value
-      );
+      authStore.setFormField(event.target.name as authFormKeys, event.target.value);
     } else {
       event = e as CheckedState;
       authStore.setFormField("rememberMe", event as boolean);
@@ -42,10 +31,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     // Simular login exitoso
-    const signedInSuccessfully = await authStore.login(
-      authStore.email,
-      authStore.password
-    );
+    const signedInSuccessfully = await authStore.login(authStore.email, authStore.password);
 
     if (signedInSuccessfully) {
       userStore.getUser();
@@ -71,13 +57,12 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    async function fetchUser() {
+    (async () => {
       const isUser = await userStore.getUser();
       if (isUser) {
         navigate("/");
       }
-    }
-    fetchUser();
+    })();
   }, []);
 
   return (
@@ -87,12 +72,8 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-violet-700 rounded-2xl mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-purple-900 mb-2">
-            ¡Bienvenido al museo interactivo!
-          </h1>
-          <p className="text-purple-700">
-            Inicia sesión en tu cuenta o crea una nueva
-          </p>
+          <h1 className="text-purple-900 mb-2">¡Bienvenido al museo interactivo!</h1>
+          <p className="text-purple-700">Inicia sesión en tu cuenta o crea una nueva</p>
         </div>
 
         <Tabs defaultValue="login" className="w-full">
@@ -110,9 +91,7 @@ export default function LoginPage() {
           <TabsContent value="login">
             <Card className="border-purple-100 shadow-lg">
               <CardHeader>
-                <CardTitle className="text-purple-900">
-                  Inicia sesión en tu cuenta
-                </CardTitle>
+                <CardTitle className="text-purple-900">Inicia sesión en tu cuenta</CardTitle>
                 <CardDescription className="text-purple-600">
                   Ingresa tus credenciales para acceder a tu cuenta
                 </CardDescription>
@@ -140,10 +119,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="login-password"
-                        className="text-purple-900"
-                      >
+                      <Label htmlFor="login-password" className="text-purple-900">
                         Contraseña
                       </Label>
                       <div className="relative">
@@ -163,15 +139,8 @@ export default function LoginPage() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="remember"
-                          checked={authStore.rememberMe}
-                          onCheckedChange={handleChange}
-                        />
-                        <label
-                          htmlFor="remember"
-                          className="text-sm text-purple-700 cursor-pointer"
-                        >
+                        <Checkbox id="remember" checked={authStore.rememberMe} onCheckedChange={handleChange} />
+                        <label htmlFor="remember" className="text-sm text-purple-700 cursor-pointer">
                           Recuérdame
                         </label>
                       </div>
@@ -198,22 +167,15 @@ export default function LoginPage() {
           <TabsContent value="register">
             <Card className="border-purple-100 shadow-lg">
               <CardHeader>
-                <CardTitle className="text-purple-900">
-                  Crea una cuenta
-                </CardTitle>
-                <CardDescription className="text-purple-600">
-                  Ingresa tu información para comenzar
-                </CardDescription>
+                <CardTitle className="text-purple-900">Crea una cuenta</CardTitle>
+                <CardDescription className="text-purple-600">Ingresa tu información para comenzar</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleRegister}>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="register-firstname"
-                          className="text-purple-900"
-                        >
+                        <Label htmlFor="register-firstname" className="text-purple-900">
                           Nombre
                         </Label>
                         <div className="relative">
@@ -232,10 +194,7 @@ export default function LoginPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label
-                          htmlFor="register-lastname"
-                          className="text-purple-900"
-                        >
+                        <Label htmlFor="register-lastname" className="text-purple-900">
                           Apellido
                         </Label>
                         <Input
@@ -252,10 +211,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="register-email"
-                        className="text-purple-900"
-                      >
+                      <Label htmlFor="register-email" className="text-purple-900">
                         Correo Electrónico
                       </Label>
                       <div className="relative">
@@ -274,10 +230,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="register-password"
-                        className="text-purple-900"
-                      >
+                      <Label htmlFor="register-password" className="text-purple-900">
                         Contraseña
                       </Label>
                       <div className="relative">
@@ -296,10 +249,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="register-confirm-password"
-                        className="text-purple-900"
-                      >
+                      <Label htmlFor="register-confirm-password" className="text-purple-900">
                         Confirmar Contraseña
                       </Label>
                       <div className="relative">

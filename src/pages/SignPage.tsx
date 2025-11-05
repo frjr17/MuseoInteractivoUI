@@ -11,7 +11,7 @@ import type { CheckedState } from "@radix-ui/react-checkbox";
 import { Link, useNavigate } from "react-router";
 import { useUserStore } from "@/store/user";
 
-export default function LoginPage() {
+export default function SignPage() {
   const authStore = useAuthStore();
   const userStore = useUserStore();
   const navigate = useNavigate();

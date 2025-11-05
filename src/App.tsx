@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation, useNavigate } from "react-router";
-import LoginPage from "./pages/LoginPage";
+import SignPage from "./pages/SignPage";
 import { ForgotPassword } from "./pages/ForgotPasswordPage";
 import { MuseumHome } from "./pages/MuseumHome";
 import { UserProfile } from "./pages/UserProfilePage";
@@ -14,24 +14,27 @@ function App() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+
   useEffect(() => {
     (async () => {
       let isUser = false;
-      try {
-        isUser = await userStore.getUser();
-      } catch { /* empty */ }
-      if (!isUser && !location.pathname.startsWith("/sign") && !location.pathname.startsWith("/forgot-password")) {
-        authStore.reset()
+
+      isUser = await userStore.getUser();
+
+      const isSignPages = location.pathname.startsWith("/sign") || location.pathname.startsWith("/forgot-password");
+      if (!isUser && !isSignPages) {
+        authStore.reset();
         navigate("/sign");
       }
     })();
   }, []);
+
   return (
     <Routes>
       <Route path="/" element={<MuseumHome />} />
       <Route path="/survey" element={<SurveySubmit />} />
       <Route path="/profile" element={<UserProfile />} />
-      <Route path="/sign" element={<LoginPage />} />
+      <Route path="/sign" element={<SignPage />} />
       <Route path="/forgot-password/*" element={<ForgotPassword />} />
       <Route path="/rooms/:id" element={<RoomView />} />
     </Routes>

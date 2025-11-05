@@ -1,4 +1,6 @@
 import api from "@/lib/api";
+import type { AxiosError } from "axios";
+import { toast } from "sonner";
 import { create } from "zustand";
 
 export interface RoomState {
@@ -6,7 +8,7 @@ export interface RoomState {
   room?: Room;
   getRooms: () => void;
   getRoomById: (id: number) => void;
-  submitSurvey: (payload: { room_id: number;hint_id: number; email?: string }) => Promise<void>;
+  submitSurvey: (payload: { room_id: number; hint_id: number; email?: string }) => Promise<boolean>;
   isLoading: boolean;
 }
 
@@ -34,49 +36,81 @@ export const useRoomStore = create<RoomState>((set) => ({
   isLoading: false,
   getRooms: async () => {
     set({ isLoading: true });
-    // Implement get rooms logic here
+
     try {
-  const response = await api.get("/rooms", { withCredentials: true });
+      const response = await api.get("/rooms", { withCredentials: true });
       set({ rooms: response.data });
-      console.log("Rooms fetched:", response.data);
     } catch {
       set({ rooms: [] });
     }
-    set({
-      isLoading: false,
-    });
+
+    set({ isLoading: false });
   },
 
   getRoomById: async (id: number) => {
     set({ isLoading: true });
 
     try {
-  const response = await api.get(`/rooms/${id}`, { withCredentials: true });
+      const response = await api.get(`/rooms/${id}`, { withCredentials: true });
       set({ room: response.data });
-    } catch {
-      set({ room: undefined });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ error: string }>;
+
+      if (axiosError.response) {
+        const { data } = axiosError.response!;
+
+        if (data.error === "room not found" && axiosError.response.status === 404) {
+          toast.error("Sala no encontrada");
+        }
+      } else {
+        toast.error("Error al obtener la sala");
+      }
+
+      set({ isLoading: false, rooms: [] });
+      return false;
     }
 
     set({ isLoading: false });
+    return true;
   },
   submitSurvey: async (payload: { room_id: number; hint_id: number; email?: string }) => {
-    // POST to backend endpoint to mark room/hint complete or submit survey
-    // Map to backend expected keys if required (convert camelCase to snake_case)
     const backendPayload = {
       room_id: payload.room_id,
       hint_id: payload.hint_id,
       ...(payload.email ? { email: payload.email } : {}),
     };
+    try {
+      const res = await api.post(`/rooms/complete`, backendPayload, { withCredentials: true });
 
-  const res = await api.post(`/rooms/complete`, backendPayload, { withCredentials: true });
-    // Optionally refresh the room data after completion
-    if (res?.data && payload.room_id) {
-      try {
-  const updated = await api.get(`/rooms/${payload.room_id}`, { withCredentials: true });
-        set({ room: updated.data });
-      } catch {
-        // ignore refresh errors
+      if (res?.data && payload.room_id) {
+        toast.success("Encuesta enviada", { description: "Gracias por tu participación" });
+        try {
+          const updated = await api.get(`/rooms/${payload.room_id}`, { withCredentials: true });
+          set({ room: updated.data });
+        } catch {
+          toast.error("Error al obtener la sala actualizada");
+          set({ isLoading: false });
+          return false;
+        }
       }
+    } catch (error) {
+      const axiosError = error as AxiosError<{ error: string }>;
+
+      if (axiosError.response) {
+        const { data } = axiosError.response!;
+
+        if (data.error === "hint not found for room" && axiosError.response.status === 404) {
+          toast.error("Pista no encontrada para la sala");
+        }
+      } else {
+        toast.error("Error al completar la encuesta");
+      }
+
+      set({ isLoading: false });
+      return false;
     }
+
+    set({ isLoading: false });
+    return true;
   },
 }));

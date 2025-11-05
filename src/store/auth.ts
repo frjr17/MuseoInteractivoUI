@@ -25,7 +25,7 @@ export interface AuthState {
   sendPasswordResetEmail: (email: string) => Promise<boolean>;
   verifyPasswordResetCode: (code: string) => Promise<boolean>;
   resetPassword: (newPassword: string) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>;
   reset: () => void;
 }
 
@@ -46,19 +46,20 @@ export const useAuthStore = create<AuthState>()(
       setFormField: (field: authFormKeys, value: string | boolean) => set({ [field]: value }),
 
       login: async (email: string, password: string) => {
-        // Implement login logic here
         set({ isLoading: true });
 
         try {
           await api.post("/auth/login", { email, password });
 
           toast.success("Inicio de sesión exitoso");
-          await useUserStore.getState().getUser();
         } catch (error) {
-          const axiosError = error as AxiosError;
+          const axiosError = error as AxiosError<{ error: string }>;
 
-          if (axiosError.response && axiosError.response.status === 401) {
-            toast.error("Correo o contraseña incorrectos");
+          if (axiosError.response) {
+            const { data } = axiosError.response!;
+            if (data.error === "invalid credentials" && axiosError.response.status === 401) {
+              toast.error("Correo o contraseña incorrectos");
+            }
           }
 
           return false;
@@ -69,7 +70,6 @@ export const useAuthStore = create<AuthState>()(
       },
 
       register: async (name: string, lastName: string, email: string, password: string, confirmPassword: string) => {
-        // Implement registration logic here
         set({ isLoading: true });
         try {
           const response = await api.post("/auth/register", {
@@ -82,28 +82,50 @@ export const useAuthStore = create<AuthState>()(
 
           if (response.status === 201) {
             toast.success("Registro exitoso");
-            return true;
           }
-        } catch {
-          toast.error("Error en el registro");
+        } catch (error) {
+          const axiosError = error as AxiosError<{ error: string }>;
+
+          if (axiosError.response) {
+            const { data } = axiosError.response!;
+
+            if (data.error === "email already registered" && axiosError.response.status === 400) {
+              toast.error("Este correo ya está registrado");
+            }
+          } else {
+            toast.error("Error en el registro");
+          }
+          set({ isLoading: false });
           return false;
         }
 
         set({ isLoading: false });
-        return false;
+        return true;
       },
 
       sendPasswordResetEmail: async (email: string) => {
-        // Implement password reset email logic here
         set({ isLoading: true });
 
         try {
           const response = await api.post("/auth/forgot", { email });
+
           if (response.data.status === "code_sent") {
             toast.success("Código de restablecimiento enviado");
           }
-        } catch {
-          toast.error("Error al enviar el correo de restablecimiento");
+        } catch (error) {
+          const axiosError = error as AxiosError<{ error: string }>;
+
+          if (axiosError.response) {
+            const { data } = axiosError.response!;
+
+            if (data.error === "email not found" && axiosError.response.status === 404) {
+              toast.error("Este correo no está registrado");
+            }
+          } else {
+            toast.error("Error al enviar el correo de restablecimiento");
+          }
+
+          set({ isLoading: false });
           return false;
         }
 
@@ -112,19 +134,37 @@ export const useAuthStore = create<AuthState>()(
       },
 
       verifyPasswordResetCode: async (code: string) => {
-        // Implement code verification logic here
         set({ isLoading: true });
         const { email } = get();
-        const response = await api.post("/auth/verify-reset", {
-          code,
-          email,
-        });
-        if (response.data.status !== "code_valid") {
-          toast.error("Código inválido");
+
+        try {
+          const response = await api.post("/auth/verify-reset", {
+            code,
+            email,
+          });
+
+          if (response.data.status === "code_valid") {
+            toast.success("Código verificado");
+          }
+        } catch (error) {
+          const axiosError = error as AxiosError<{ error: string }>;
+
+          if (axiosError.response) {
+            const { data } = axiosError.response!;
+
+            if (data.error === "email not found" && axiosError.response.status === 404) {
+              toast.error("Este correo no está registrado");
+            }
+            if (data.error === "invalid or expired code" && axiosError.response.status === 400) {
+              toast.error("Código inválido o expirado");
+            }
+          } else {
+            toast.error("Error al verificar el correo de restablecimiento");
+          }
+
           set({ isLoading: false });
           return false;
         }
-        toast.success("Código verificado");
 
         set({ isLoading: false });
         return true;
@@ -139,12 +179,33 @@ export const useAuthStore = create<AuthState>()(
             new_password: newPassword,
             code: get().resetCode,
           });
-          if (response.data.status !== "password_changed") {
-            toast.error("Error al cambiar la contraseña");
-            set({ isLoading: false });
-            return false;
+
+          if (response.data.status === "password_changed") {
+            toast.success("Contraseña cambiada con éxito");
+            useAuthStore.getState().reset();
           }
-        } catch {
+        } catch (error) {
+          const axiosError = error as AxiosError<{ error: string }>;
+
+          if (axiosError.response) {
+            const { data } = axiosError.response!;
+
+            if (data.error === "email not found" && axiosError.response.status === 404) {
+              toast.error("Este correo no está registrado");
+              set({ isLoading: false });
+              return false;
+            }
+
+            if (data.error === "invalid or expired code" && axiosError.response.status === 400) {
+              toast.error("Código inválido o expirado");
+              set({ isLoading: false });
+              return false;
+            }
+          } else {
+            toast.error("Error al enviar el correo de restablecimiento");
+          }
+
+          set({ isLoading: false });
           return false;
         }
 
@@ -155,29 +216,24 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         // Implement logout logic here
         set({ isLoading: true });
-        await api.post("/auth/logout", {}, { withCredentials: true });
-        useUserStore.setState({
-          id: "",
-          name: "",
-          lastName: "",
-          email: "",
-          globalPosition: 0,
-          role: "",
-          totalPoints: 0,
-          createdAt: null,
-          updatedAt: null,
-          isLoading: false,
-        });
-        set({
-          isLoading: false,
-          name: "",
-          lastName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          rememberMe: true,
-          resetCode: "",
-        });
+
+        try {
+          const response = await api.post("/auth/logout", {}, { withCredentials: true });
+          useUserStore.getState().resetUser();
+          useAuthStore.getState().reset();
+          
+          if(response.status === 200) {
+            toast.success("Cierre de sesión exitoso");
+          }
+        } catch {
+          /* empty */
+          toast.error("Error al cerrar sesión");
+          set({ isLoading: false });
+          return false;
+        }
+
+        set({ isLoading: false });
+        return true;
       },
 
       reset: () =>

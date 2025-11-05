@@ -32,7 +32,7 @@ export default function SurveySubmit() {
         }
 
         const room_id = Number(match[1]);
-        const hint_id = Number(match[2]) + (5*(room_id-1));
+        const hint_id = Number(match[2]) + 5 * (room_id - 1);
 
         if (Number.isNaN(room_id) || Number.isNaN(hint_id)) {
           setError("IDs inválidos en 'survey'");
@@ -40,16 +40,11 @@ export default function SurveySubmit() {
           return;
         }
 
-  // Prepare payload
-  const payload: { room_id: number; hint_id: number; email?: string } = { room_id, hint_id };
-  if (email) payload.email = email;
+        const payload: { room_id: number; hint_id: number; email?: string } = { room_id, hint_id };
+        if (email) payload.email = email;
 
-  // Send to backend via room store
-  await roomStore.submitSurvey(payload);
+        await roomStore.submitSurvey(payload);
 
-        toast.success("Encuesta enviada", { description: "Gracias por tu participación" });
-
-        // Navigate back to room view
         navigate(`/rooms/${room_id}`);
       } catch (err: unknown) {
         console.error(err);
@@ -59,7 +54,6 @@ export default function SurveySubmit() {
         setLoading(false);
       }
     })();
-  // (run once on mount)
   }, []);
 
   if (loading) {
@@ -79,10 +73,7 @@ export default function SurveySubmit() {
           <h3 className="text-lg font-semibold text-red-600">Error</h3>
           <p className="mt-2 text-sm text-gray-700">{error}</p>
           <div className="mt-4">
-            <button
-              className="px-4 py-2 bg-purple-600 text-white rounded"
-              onClick={() => navigate(-1)}
-            >
+            <button className="px-4 py-2 bg-purple-600 text-white rounded" onClick={() => navigate(-1)}>
               Volver
             </button>
           </div>

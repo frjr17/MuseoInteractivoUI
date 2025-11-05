@@ -30,7 +30,6 @@ export default function SignPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simular login exitoso
     const signedInSuccessfully = await authStore.login(authStore.email, authStore.password);
 
     if (signedInSuccessfully) {
@@ -38,10 +37,13 @@ export default function SignPage() {
       navigate("/");
     }
   };
+  
+  const resetAuthFields = () => {
+    authStore.reset()
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simular registro exitoso
     const registeredSuccessfully = await authStore.register(
       authStore.name,
       authStore.lastName,
@@ -77,8 +79,8 @@ export default function SignPage() {
           <p className="text-purple-700">Inicia sesión en tu cuenta o crea una nueva</p>
         </div>
 
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+        <Tabs onValueChange={resetAuthFields} defaultValue="login" className="w-full">
+          <TabsList  className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="login" className="gap-2">
               <LogIn className="w-4 h-4" />
               Iniciar Sesión

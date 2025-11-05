@@ -47,7 +47,7 @@ export const useUserStore = create<UserState>((set) => ({
         updatedAt: new Date(userData.updatedAt),
       });
 
-      toast.success("Datos de usuario cargados correctamente");
+      // toast.success("Datos de usuario cargados correctamente");
     } catch (error) {
       const axiosError = error as AxiosError<{ error: string }>;
 

@@ -41,7 +41,7 @@ function App() {
       <Route path="/rooms/1" element={<FirstRoomPage />} />
       <Route path="/rooms/:id" element={<RoomView />} />
     </Routes>
-  );
+  );   
 }
 
 export default App;

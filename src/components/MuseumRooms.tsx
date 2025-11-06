@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Link } from "react-router";
 import { useRoomStore } from "@/store/room";
 import { cn } from "@/lib/utils";
+import { Badge } from "./ui/badge";
 
 export default function MuseumRooms() {
   const roomStore = useRoomStore();
@@ -18,7 +19,14 @@ export default function MuseumRooms() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {roomStore.rooms.map((room) => {
           return (
-            <Card key={room.id} className="border-purple-100 shadow-lg bg-white">
+            <Card key={room.id} className="relative border-purple-100 shadow-lg bg-white">
+                {room.completed && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <Badge className="bg-green-600 text-white hover:bg-green-700">
+                        ✓ Completado
+                      </Badge>
+                    </div>
+                  )}
               <CardHeader className="pb-4">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-100 mb-4">
                   <Camera className="w-6 h-6 text-purple-600" />

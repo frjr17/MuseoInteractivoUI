@@ -9,12 +9,15 @@ import { useEffect, useState } from "react";
 export default function FirstRoomPage() {
   const roomStore = useRoomStore();
   const { room } = roomStore;
+  const completed = room?.completed;
   const [secretCodeInput, setSecretCodeInput] = useState("");
 
-  const handleValidateSecretCode = () => {
+  const handleValidateSecretCode = async () => {
     if (secretCodeInput.trim().toUpperCase() === roomStore.room?.final_code.toUpperCase()) {
       // Enviar el código correcto y desbloquear la sala
-      roomStore.verify1stRoomCode(secretCodeInput.trim().toUpperCase());
+      await roomStore.verify1stRoomCode(secretCodeInput.trim().toUpperCase());
+      await roomStore.getRoomById(1);
+
     }
   };
 
@@ -22,7 +25,7 @@ export default function FirstRoomPage() {
     (async () => {
       await roomStore.getRoomById(1);
     })();
-  }, []);
+  }, [completed]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50">

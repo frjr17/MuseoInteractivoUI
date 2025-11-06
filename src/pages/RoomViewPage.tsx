@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { QRScanner } from "@/components/QRScanner";
 import { Eye } from "lucide-react";
 import { useRoomStore } from "@/store/room";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
 import Header from "@/components/Header";
 import HintsList from "@/components/HintsList";
@@ -14,20 +14,25 @@ export default function RoomViewPage() {
   const { id } = useParams();
   const roomId = Number(id);
   const roomStore = useRoomStore();
+  const navigate = useNavigate(); 
   const { room } = roomStore;
   const totalHints = room?.hints.length as number;
   const roomTitle = room?.name;
   const roomDescription = "Reto de la Sala " + roomId;
 
   useEffect(() => {
-    roomStore.getRoomById(roomId);
-
-    if(roomId !== 1){
-      if(!roomStore.rooms.find(r => r.id === roomId - 1)?.completed){
-        toast.error("Debes completar la sala anterior antes de acceder a esta.");
+    (async () => {
+      await roomStore.getRooms();
+      await roomStore.getRoomById(roomId);
+      if (roomId !== 1) {
+        const previousRoom = roomStore.rooms.find((r) => r.id === roomId - 1);
+        console.log(previousRoom);
+        if (!roomStore.rooms.find((r) => r.id === roomId - 1)?.completed) {
+          toast.error("Debes completar la sala anterior antes de acceder a esta.");
+          navigate("/")
+        }
       }
-    }
-
+    })();
   }, []);
 
   const [showScanner, setShowScanner] = useState(false);

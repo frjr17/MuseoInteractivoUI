@@ -8,6 +8,7 @@ export interface RoomState {
   room?: Room;
   getRooms: () => void;
   getRoomById: (id: number) => void;
+  verify1stRoomCode: (code: string) => void;
   submitSurvey: (payload: { room_id: number; hint_id: number; email?: string }) => Promise<boolean>;
   isLoading: boolean;
 }
@@ -39,8 +40,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     set({ isLoading: true });
 
     try {
-  const response = await api.get("/rooms");
-  console.log(response.data);
+      const response = await api.get("/rooms");
       set({ rooms: response.data });
     } catch {
       set({ rooms: [] });
@@ -53,7 +53,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     set({ isLoading: true });
 
     try {
-  const response = await api.get(`/rooms/${id}`);
+      const response = await api.get(`/rooms/${id}`);
       set({ room: response.data });
     } catch (error) {
       const axiosError = error as AxiosError<{ error: string }>;
@@ -82,7 +82,7 @@ export const useRoomStore = create<RoomState>((set) => ({
       ...(payload.email ? { email: payload.email } : {}),
     };
     try {
-  const res = await api.post(`/rooms/complete`, backendPayload);
+      const res = await api.post(`/rooms/complete`, backendPayload);
 
       if (res?.data && payload.room_id) {
         toast.success("Encuesta enviada", { description: "Gracias por tu participación" });
@@ -114,5 +114,42 @@ export const useRoomStore = create<RoomState>((set) => ({
 
     set({ isLoading: false });
     return true;
+  },
+
+  verify1stRoomCode: async (code: string) => {
+    set({ isLoading: true });
+
+    try {
+      const response = await api.post(`/rooms/1/verify_final_code`, { final_code: code });
+      if (response.data.correct) {
+        toast.success("Código verificado correctamente");
+      } else {
+        toast.error("Código incorrecto, intenta de nuevo");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<{ error: string }>;
+
+      if (axiosError.response) {
+        const { data } = axiosError.response!;
+
+        if (data.error === "room not found" && axiosError.response.status === 404) {
+          toast.error("Sala no encontrada");
+        }
+
+        if (data.error === "final_code required in request body" && axiosError.response.status === 400) {
+          toast.error("Código final requerido en la solicitud");
+        }
+
+        if (data.error === "room already completed" && axiosError.response.status === 400) {
+          toast.error("Sala ya completada");
+        }
+      } else {
+        toast.error("Error al completar la encuesta");
+      }
+
+      set({ isLoading: false });
+    }
+
+    set({ isLoading: false });
   },
 }));

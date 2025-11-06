@@ -26,8 +26,7 @@ export default function RoomViewPage() {
       await roomStore.getRoomById(roomId);
       if (roomId !== 1) {
         const previousRoom = roomStore.rooms.find((r) => r.id === roomId - 1);
-        console.log(previousRoom);
-        if (!roomStore.rooms.find((r) => r.id === roomId - 1)?.completed) {
+        if (!previousRoom?.completed) {
           toast.error("Debes completar la sala anterior antes de acceder a esta.");
           navigate("/")
         }

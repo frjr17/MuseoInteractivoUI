@@ -22,10 +22,11 @@ export default function RoomViewPage() {
 
   useEffect(() => {
     (async () => {
-      await roomStore.getRooms();
+      const rooms = await roomStore.getRooms();
       await roomStore.getRoomById(roomId);
+      
       if (roomId !== 1) {
-        const previousRoom = roomStore.rooms.find((r) => r.id === roomId - 1);
+        const previousRoom = rooms.find((r) => r.id === roomId - 1);
         if (!previousRoom?.completed) {
           toast.error("Debes completar la sala anterior antes de acceder a esta.");
           navigate("/")

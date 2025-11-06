@@ -6,9 +6,9 @@ import { create } from "zustand";
 export interface RoomState {
   rooms: Array<Room>;
   room?: Room;
-  getRooms: () => void;
-  getRoomById: (id: number) => void;
-  verify1stRoomCode: (code: string) => void;
+  getRooms: () => Promise<Array<Room>>;
+  getRoomById: (id: number) => Promise<boolean>;
+  verify1stRoomCode: (code: string) => Promise<void>;
   submitSurvey: (payload: { room_id: number; hint_id: number; email?: string }) => Promise<boolean>;
   isLoading: boolean;
 }
@@ -47,6 +47,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     }
 
     set({ isLoading: false });
+    return useRoomStore.getState().rooms as Array<Room>;
   },
 
   getRoomById: async (id: number) => {

@@ -33,10 +33,10 @@ export const useUserStore = create<UserState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const response = await api.get("/auth/me", { withCredentials: true });
+      const response = await api.get("/auth/me");
       const userData = response.data;
-
       set({
+        id: userData.id,
         name: userData.nombre,
         lastName: userData.apellido,
         email: userData.email,

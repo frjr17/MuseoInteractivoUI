@@ -38,7 +38,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const response = await api.get("/rooms", { withCredentials: true });
+  const response = await api.get("/rooms");
       set({ rooms: response.data });
     } catch {
       set({ rooms: [] });
@@ -51,7 +51,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const response = await api.get(`/rooms/${id}`, { withCredentials: true });
+  const response = await api.get(`/rooms/${id}`);
       set({ room: response.data });
     } catch (error) {
       const axiosError = error as AxiosError<{ error: string }>;
@@ -80,12 +80,12 @@ export const useRoomStore = create<RoomState>((set) => ({
       ...(payload.email ? { email: payload.email } : {}),
     };
     try {
-      const res = await api.post(`/rooms/complete`, backendPayload, { withCredentials: true });
+  const res = await api.post(`/rooms/complete`, backendPayload);
 
       if (res?.data && payload.room_id) {
         toast.success("Encuesta enviada", { description: "Gracias por tu participación" });
         try {
-          const updated = await api.get(`/rooms/${payload.room_id}`, { withCredentials: true });
+          const updated = await api.get(`/rooms/${payload.room_id}`);
           set({ room: updated.data });
         } catch {
           toast.error("Error al obtener la sala actualizada");

@@ -8,6 +8,7 @@ import SurveySubmit from "./pages/SurveySubmitPage";
 import { useEffect } from "react";
 import { useUserStore } from "./store/user";
 import { useAuthStore } from "./store/auth";
+import FirstRoomPage from "./pages/FirstRoomPage";
 
 function App() {
   const userStore = useUserStore();
@@ -37,6 +38,7 @@ function App() {
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/sign" element={<SignPage />} />
       <Route path="/forgot-password/*" element={<ForgotPassword />} />
+      <Route path="/rooms/1" element={<FirstRoomPage />} />
       <Route path="/rooms/:id" element={<RoomView />} />
     </Routes>
   );

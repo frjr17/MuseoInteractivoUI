@@ -146,13 +146,14 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
 
   const validateAndRedirect = (code: string) => {
     // Verificar si el código es válido para esta sala y pista
-    const expectedCode = `S${roomId}P${getRoomHintId(roomId, hintNumber)}`;
+    const expectedCode = room?.hints.find((h) => h.id === hintNumber)?.accessCode;
+    const urlHintCode = `S${roomId}P${getRoomHintId(roomId, hintNumber)}`;
 
     if (code.toUpperCase() === expectedCode) {
       // Código correcto - crear URL de pregunta externa
       const hint = room?.hints.find((h) => h.id === hintNumber);
       const encodedUrl = encodeURIComponent(window.location.origin + `/survey`);
-      const questionUrl = `${hint?.limeSurveyUrl}?${expectedCode}C=${userStore.email}&${expectedCode}E=${encodedUrl}`;
+      const questionUrl = `${hint?.limeSurveyUrl}?${urlHintCode}C=${userStore.email}&${urlHintCode}E=${encodedUrl}`;
       onScan(questionUrl);
     } else {
       toast.error("Código incorrecto", {

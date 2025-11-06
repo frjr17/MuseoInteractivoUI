@@ -28,6 +28,7 @@ export interface Hint {
   title: string;
   limeSurveyUrl?: string;
   imageUrl?: string;
+  accessCode: string;
   completed: boolean;
 }
 
@@ -39,6 +40,7 @@ export const useRoomStore = create<RoomState>((set) => ({
 
     try {
   const response = await api.get("/rooms");
+  console.log(response.data);
       set({ rooms: response.data });
     } catch {
       set({ rooms: [] });

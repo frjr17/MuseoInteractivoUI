@@ -13,12 +13,13 @@ export default function SurveySubmitPage() {
   useEffect(() => {
     (async () => {
       try {
+        await roomStore.getRooms();
         const params = new URLSearchParams(location.search);
         const survey = params.get("survey");
         const email = params.get("email");
 
         if (!survey) {
-          setError("Parámetro 'survey' faltante");
+          setError("Parámetro encuesta faltante");
           setLoading(false);
           return;
         }
@@ -26,7 +27,7 @@ export default function SurveySubmitPage() {
         // Expected format: S{room}P{hint} e.g. S1P2
         const match = survey.match(/S(\d+)P(\d+)/i);
         if (!match) {
-          setError("Formato de 'survey' inválido. Se esperaba S{room}P{hint} (ej: S1P2)");
+          setError("Formato de encuesta inválido.");
           setLoading(false);
           return;
         }

@@ -38,16 +38,18 @@ export const useRoomStore = create<RoomState>((set) => ({
   isLoading: false,
   getRooms: async () => {
     set({ isLoading: true });
-
+    let rooms: Array<Room> = [];
     try {
       const response = await api.get("/rooms");
-      set({ rooms: response.data });
+       rooms = response.data as Array<Room>;
+      set({ rooms});
     } catch {
-      set({ rooms: [] });
+      set({ rooms });
     }
 
     set({ isLoading: false });
-    return useRoomStore.getState().rooms as Array<Room>;
+    
+    return rooms
   },
 
   getRoomById: async (id: number) => {

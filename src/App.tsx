@@ -1,33 +1,34 @@
 import { Route, Routes, useLocation, useNavigate } from "react-router";
 import SignPage from "./pages/SignPage";
-import { ForgotPassword } from "./pages/ForgotPasswordPage";
-import { MuseumHome } from "./pages/MuseumHome";
+import ForgotPassword from "./pages/ForgotPasswordPage";
+import MuseumHome from "./pages/MuseumHomePage";
 import { UserProfile } from "./pages/UserProfilePage";
-import RoomView from "./pages/RoomView";
-import SurveySubmit from "./pages/SurveySubmit";
+import RoomView from "./pages/RoomViewPage";
+import SurveySubmit from "./pages/SurveySubmitPage";
 import { useEffect } from "react";
 import { useUserStore } from "./store/user";
 import { useAuthStore } from "./store/auth";
 
 function App() {
   const userStore = useUserStore();
+  const { id } = userStore;
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const isSignPages = location.pathname.startsWith("/sign") || location.pathname.startsWith("/forgot-password");
 
   useEffect(() => {
     (async () => {
       let isUser = false;
 
       isUser = await userStore.getUser();
-
-      const isSignPages = location.pathname.startsWith("/sign") || location.pathname.startsWith("/forgot-password");
       if (!isUser && !isSignPages) {
         authStore.reset();
         navigate("/sign");
       }
     })();
-  }, []);
+  }, [id]);
 
   return (
     <Routes>

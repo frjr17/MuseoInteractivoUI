@@ -3,14 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { QRScanner } from "@/components/QRScanner";
-import {  Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useRoomStore } from "@/store/room";
 import { useParams } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
 import Header from "@/components/Header";
 import HintsList from "@/components/HintsList";
 
-export default function RoomView() {
+export default function RoomViewPage() {
   const { id } = useParams();
   const roomId = Number(id);
   const roomStore = useRoomStore();
@@ -19,9 +19,15 @@ export default function RoomView() {
   const roomTitle = room?.name;
   const roomDescription = "Reto de la Sala " + roomId;
 
-
   useEffect(() => {
     roomStore.getRoomById(roomId);
+
+    if(roomId !== 1){
+      if(!roomStore.rooms.find(r => r.id === roomId - 1)?.completed){
+        toast.error("Debes completar la sala anterior antes de acceder a esta.");
+      }
+    }
+
   }, []);
 
   const [showScanner, setShowScanner] = useState(false);
@@ -61,15 +67,15 @@ export default function RoomView() {
         duration: 4000,
       });
     }
-  };  
-  
+  };
+
   if (roomStore.isLoading || !room) {
     return (
-          <div className="flex max-w-7xl w-full h-screen items-center align-center">
-            <Spinner className="size-8" />
-          </div>
-        );
-        
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3">
+        <Spinner className="size-8 text-purple-600" />
+        <p className="text-purple-600">Cargando sala...</p>
+      </div>
+    );
   }
 
   return (
@@ -86,7 +92,6 @@ export default function RoomView() {
         {/* Main Card */}
         <Card className="border-purple-200 shadow-lg bg-white mb-6">
           <CardContent className="pt-6 pb-6 px-4">
-
             <HintsList setShowScanner={setShowScanner} setCurrentHintId={setCurrentHintId} />
 
             {/* Progress Section */}

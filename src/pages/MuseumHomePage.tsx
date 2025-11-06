@@ -8,7 +8,7 @@ import { useRoomStore } from "@/store/room";
 import Header from "@/components/Header";
 import MuseumRooms from "@/components/MuseumRooms";
 
-export function MuseumHome() {
+export default function MuseumHomePage() {
   const userStore = useUserStore();
   const roomStore = useRoomStore();
 

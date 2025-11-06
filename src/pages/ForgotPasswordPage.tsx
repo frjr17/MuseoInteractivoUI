@@ -5,7 +5,7 @@ import VerifyEmail from "@/components/VerifyEmail";
 import ResetPassword from "@/components/ResetPassword";
 import PasswordResetSuccess from "@/components/PasswordResetSuccess";
 
-export function ForgotPassword() {
+export default function ForgotPasswordPage() {
  
 
   return (

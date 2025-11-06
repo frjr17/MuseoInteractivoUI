@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useRoomStore } from "@/store/room";
 
-export default function SurveySubmit() {
+export default function SurveySubmitPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const roomStore = useRoomStore();

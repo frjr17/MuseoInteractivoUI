@@ -18,6 +18,7 @@ export default function HintsList(props: HintsListProps) {
   const handleHintClick = (hintId: number) => {
     const hint = room?.hints.find((h) => h.id === hintId) as Hint;
     if (!hint.completed) {
+      console.log(hintId)
       props.setCurrentHintId(hintId);
       props.setShowScanner(true);
     }

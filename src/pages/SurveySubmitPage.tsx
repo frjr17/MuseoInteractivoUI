@@ -33,14 +33,14 @@ export default function SurveySubmitPage() {
         }
 
         const room_id = Number(match[1]);
-        const hint_id = Number(match[2]) + 5 * (room_id - 1);
+        const hint_id = Number(match[2]) + 5 * (room_id - 2);
 
         if (Number.isNaN(room_id) || Number.isNaN(hint_id)) {
           setError("IDs inválidos en 'survey'");
           setLoading(false);
           return;
         }
-
+        console.log(hint_id)
         const payload: { room_id: number; hint_id: number; email?: string } = { room_id, hint_id };
         if (email) payload.email = email;
 

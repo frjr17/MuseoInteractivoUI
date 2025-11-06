@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, getRoomHintId } from "@/lib/utils";
 import { useRoomStore, type Hint } from "@/store/room";
 import { ArrowRight, Lock } from "lucide-react";
 import { useParams } from "react-router";
@@ -38,7 +38,7 @@ export default function HintsList(props: HintsListProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center flex-1">
                 <span className="w-2 h-2 bg-purple-600 rounded-full mr-3 flex-shrink-0"></span>
-                {hint.id === 1 || room?.hints[idx - 1]?.completed ? (
+                {getRoomHintId(roomId, hint.id) === 1 || room?.hints[idx - 1]?.completed ? (
                   <button
                     onClick={() => handleHintClick(hint.id)}
                     className="text-purple-600 hover:text-purple-800 transition-colors text-left flex items-center gap-2"

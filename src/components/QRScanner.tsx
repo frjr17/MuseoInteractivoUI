@@ -49,8 +49,8 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
         },
         (decodedText) => {
           // QR escaneado exitosamente - validar código
-          validateAndRedirect(decodedText);
           stopScanner();
+          validateAndRedirect(decodedText);
         },
         () => {
           // Error de escaneo (ignorar - son errores continuos mientras escanea)

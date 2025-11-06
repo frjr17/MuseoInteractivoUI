@@ -7,6 +7,9 @@ const baseURL = import.meta.env.VITE_API_URL as string;
 
 const api = axios.create({
   baseURL,
+  headers:{
+    "Allow-Access-Control-Origin":"*"
+  }
 });
 
 // Attach Authorization header (Bearer token) on every request when a token exists.

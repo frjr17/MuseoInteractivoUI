@@ -10,10 +10,12 @@ import { useAuthStore, type authFormKeys } from "@/store/auth";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { Link, useNavigate } from "react-router";
 import { useUserStore } from "@/store/user";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function SignPage() {
   const authStore = useAuthStore();
   const userStore = useUserStore();
+  const { id } = userStore;
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | CheckedState) => {
@@ -37,10 +39,10 @@ export default function SignPage() {
       navigate("/");
     }
   };
-  
+
   const resetAuthFields = () => {
-    authStore.reset()
-  }
+    authStore.reset();
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,14 +61,23 @@ export default function SignPage() {
   };
 
   useEffect(() => {
-    (async () => {
-      const isUser = await userStore.id.length;
-
+    (() => {
+      const isUser = Boolean(id);
       if (isUser) {
         navigate("/");
       }
     })();
-  }, []);
+  }, [userStore]);
+
+
+  
+  if (authStore.isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3">
+        <Spinner className="size-8 text-purple-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-violet-50 to-blue-50 p-4">
@@ -80,7 +91,7 @@ export default function SignPage() {
         </div>
 
         <Tabs onValueChange={resetAuthFields} defaultValue="login" className="w-full">
-          <TabsList  className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="login" className="gap-2">
               <LogIn className="w-4 h-4" />
               Iniciar Sesión

@@ -25,7 +25,7 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const roomStore = useRoomStore();
   const { room } = roomStore;
-
+  console.log('hintNumber', hintNumber);
   const userStore = useUserStore();
 
  
@@ -41,6 +41,8 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
       const html5QrCode = new Html5Qrcode("qr-reader");
       scannerRef.current = html5QrCode;
 
+      let handled = false;
+
       await html5QrCode.start(
         { facingMode: "environment" },
         {
@@ -48,12 +50,34 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
           qrbox: { width: 250, height: 250 },
         },
         (decodedText) => {
-          // QR escaneado exitosamente - validar código
+          // Prevent multiple invocations if the decoder fires several times quickly
+          if (handled) return;
+          handled = true;
+
+          // Stop the scanner immediately using the instance to avoid race conditions
+          html5QrCode
+        .stop()
+        .then(() => {
+          try {
+            html5QrCode.clear();
+          } catch  {
+            // ignore clear errors
+          }
+        })
+        .catch((err) => {
+          console.error("Error stopping scanner after successful scan:", err);
+        })
+        .finally(() => {
+          scannerRef.current = null;
+          setIsScanning(false);
+          setShowScanner(false);
+        });
+
+          // Handle the decoded result
           validateAndRedirect(decodedText);
-          stopScanner();
         },
         () => {
-          // Error de escaneo (ignorar - son errores continuos mientras escanea)
+          // scanning errors are expected and can be ignored
         }
       );
 
@@ -146,13 +170,14 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
 
   const validateAndRedirect = (code: string) => {
     // Verificar si el código es válido para esta sala y pista
-    const expectedCode = `S${roomId}P${getRoomHintId(roomId, hintNumber)}`;
+    const expectedCode = room?.hints.find((h) => h.id === hintNumber)?.accessCode;
+    const urlHintCode = `S${roomId}P${getRoomHintId(roomId, hintNumber)}`;
 
     if (code.toUpperCase() === expectedCode) {
       // Código correcto - crear URL de pregunta externa
       const hint = room?.hints.find((h) => h.id === hintNumber);
       const encodedUrl = encodeURIComponent(window.location.origin + `/survey`);
-      const questionUrl = `${hint?.limeSurveyUrl}?${expectedCode}C=${userStore.email}&${expectedCode}E=${encodedUrl}`;
+      const questionUrl = `${hint?.limeSurveyUrl}?${urlHintCode}C=${userStore.email}&${urlHintCode}E=${encodedUrl}`;
       onScan(questionUrl);
     } else {
       toast.error("Código incorrecto", {

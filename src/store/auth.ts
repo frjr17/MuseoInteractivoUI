@@ -8,6 +8,7 @@ export interface AuthState {
   name: string;
   lastName: string;
   email: string;
+  sessionToken?: string | null;
   password: string;
   confirmPassword: string;
   rememberMe?: boolean;
@@ -43,13 +44,22 @@ export const useAuthStore = create<AuthState>()(
       rememberMe: true,
       resetCode: "",
 
+      sessionToken: null,
+
       setFormField: (field: authFormKeys, value: string | boolean) => set({ [field]: value }),
 
       login: async (email: string, password: string) => {
         set({ isLoading: true });
 
         try {
-          await api.post("/auth/login", { email, password });
+          const response = await api.post("/auth/login", { email, password });
+
+          // store session token if backend returns one
+          const token = response?.data?.sessionToken ?? null;
+          if (token) {
+            // Persist token in zustand state; persist middleware will write it to storage.
+            set({ sessionToken: token });
+          }
 
           toast.success("Inicio de sesión exitoso");
         } catch (error) {
@@ -62,6 +72,7 @@ export const useAuthStore = create<AuthState>()(
             }
           }
 
+          set({ isLoading: false });
           return false;
         }
 
@@ -79,8 +90,14 @@ export const useAuthStore = create<AuthState>()(
             password,
             confirmPassword,
           });
-
           if (response.status === 201) {
+            // store session token if backend returns one
+            const token = response?.data?.sessionToken ?? null;
+            if (token) {
+              // Persist token in zustand state; persist middleware will write it to storage.
+              set({ sessionToken: token });
+            }
+
             toast.success("Registro exitoso");
           }
         } catch (error) {
@@ -218,11 +235,11 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
 
         try {
-          const response = await api.post("/auth/logout", {}, { withCredentials: true });
+          const response = await api.post("/auth/logout", {});
           useUserStore.getState().resetUser();
           useAuthStore.getState().reset();
-          
-          if(response.status === 200) {
+
+          if (response.status === 200) {
             toast.success("Cierre de sesión exitoso");
           }
         } catch {

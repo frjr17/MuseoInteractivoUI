@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { useRoomStore } from "@/store/room";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -13,11 +14,12 @@ export default function FirstRoomPage() {
   const [secretCodeInput, setSecretCodeInput] = useState("");
 
   const handleValidateSecretCode = async () => {
-    if (secretCodeInput.trim().toUpperCase() === roomStore.room?.final_code.toUpperCase()) {
-      // Enviar el código correcto y desbloquear la sala
+    // Enviar el código correcto y desbloquear la sala
+    try {
       await roomStore.verify1stRoomCode(secretCodeInput.trim().toUpperCase());
       await roomStore.getRoomById(1);
-
+    } catch {
+      // Manejar error si es necesario
     }
   };
 
@@ -72,11 +74,19 @@ export default function FirstRoomPage() {
 
                   <Button
                     onClick={handleValidateSecretCode}
-                    disabled={!secretCodeInput.trim()}
+                    disabled={!secretCodeInput.trim() || roomStore.isLoading}
                     className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Validar código
+                    {roomStore.isLoading ? (
+                      <>
+                        <Spinner />
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Validar código
+                      </>
+                    )}
                   </Button>
                 </div>
               )}

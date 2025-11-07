@@ -40,7 +40,6 @@ export default function SurveySubmitPage() {
           setLoading(false);
           return;
         }
-        console.log(hint_id)
         const payload: { room_id: number; hint_id: number; email?: string } = { room_id, hint_id };
         if (email) payload.email = email;
 

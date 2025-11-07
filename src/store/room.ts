@@ -121,7 +121,6 @@ export const useRoomStore = create<RoomState>((set) => ({
 
   verify1stRoomCode: async (code: string) => {
     set({ isLoading: true });
-
     try {
       const response = await api.post(`/rooms/1/verify_final_code`, { final_code: code });
       if (response.data.correct) {

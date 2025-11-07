@@ -25,7 +25,6 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const roomStore = useRoomStore();
   const { room } = roomStore;
-  console.log('hintNumber', hintNumber);
   const userStore = useUserStore();
 
  

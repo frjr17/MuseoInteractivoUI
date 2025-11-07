@@ -41,6 +41,8 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
       const html5QrCode = new Html5Qrcode("qr-reader");
       scannerRef.current = html5QrCode;
 
+      let handled = false;
+
       await html5QrCode.start(
         { facingMode: "environment" },
         {
@@ -48,12 +50,34 @@ export function QRScanner({ onScan, onClose, hintNumber, roomId }: QRScannerProp
           qrbox: { width: 250, height: 250 },
         },
         (decodedText) => {
-          // QR escaneado exitosamente - validar código
-          stopScanner();
+          // Prevent multiple invocations if the decoder fires several times quickly
+          if (handled) return;
+          handled = true;
+
+          // Stop the scanner immediately using the instance to avoid race conditions
+          html5QrCode
+        .stop()
+        .then(() => {
+          try {
+            html5QrCode.clear();
+          } catch  {
+            // ignore clear errors
+          }
+        })
+        .catch((err) => {
+          console.error("Error stopping scanner after successful scan:", err);
+        })
+        .finally(() => {
+          scannerRef.current = null;
+          setIsScanning(false);
+          setShowScanner(false);
+        });
+
+          // Handle the decoded result
           validateAndRedirect(decodedText);
         },
         () => {
-          // Error de escaneo (ignorar - son errores continuos mientras escanea)
+          // scanning errors are expected and can be ignored
         }
       );
 

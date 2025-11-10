@@ -23,6 +23,29 @@ export default function FirstRoomPage() {
     }
   };
 
+  // Función para formatear el código con guiones automáticos
+  const formatSecretCode = (value: string) => {
+    // Eliminar todo lo que no sea número
+    const numbers = value.replace(/\D/g, "");
+
+    // Limitar a 16 dígitos (4 grupos de 4)
+    const limitedNumbers = numbers.slice(0, 16);
+
+    // Agregar guiones cada 4 dígitos
+    const parts = [];
+    for (let i = 0; i < limitedNumbers.length; i += 4) {
+      parts.push(limitedNumbers.slice(i, i + 4));
+    }
+
+    return parts.join("-");
+  };
+
+  // Función para manejar el cambio en el input del código
+  const handleSecretCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatSecretCode(e.target.value);
+    setSecretCodeInput(formatted);
+  };
+
   useEffect(() => {
     (async () => {
       await roomStore.getRoomById(1);
@@ -61,8 +84,8 @@ export default function FirstRoomPage() {
                     <Input
                       type="text"
                       value={secretCodeInput}
-                      onChange={(e) => setSecretCodeInput(e.target.value)}
-                      placeholder="Ingresa el código aquí"
+                      onChange={handleSecretCodeChange}
+                      placeholder="Ingresa el código aquí (Ej.: 1234-5678-9012-3456)"
                       className="border-purple-200 focus:border-purple-500 focus:ring-purple-500 uppercase"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {

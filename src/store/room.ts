@@ -124,7 +124,7 @@ export const useRoomStore = create<RoomState>((set) => ({
     try {
       const response = await api.post(`/rooms/1/verify_final_code`, { final_code: code });
       if (response.data.correct) {
-        toast.success("Código verificado correctamente");
+        toast.success("Código correcto!",{description: "Has desbloqueado la Sala 2" });
       } else {
         toast.error("Código incorrecto, intenta de nuevo");
       }

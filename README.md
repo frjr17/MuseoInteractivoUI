@@ -105,10 +105,9 @@ Nota: El backend debe emitir `sessionToken` en las respuestas de login/registro 
 - Mantener nombres y estilos consistentes.
 
 ### Contribuyentes
-- Agrega tu nombre aquí:
-  - Hernán Valencia ([Me!🙌](https://github.com/frjr17)): Fullstack Dev
-  - Luis Ellis ([@luisellisc](https://github.com/luisellisc)): Generación de Encuestas
-  - Aywad Al Chami ([@Shuli01](https://github.com/Shuli01)): Diseño
+    - Hernán Valencia ([Me!🙌](https://github.com/frjr17)): Fullstack Dev
+    - Luis Ellis ([@luisellisc](https://github.com/luisellisc)): Generación de Encuestas
+    - Aywad Al Chami ([@Shuli01](https://github.com/Shuli01)): Diseño
 
 ## Troubleshooting
 - 401/"unauthorized": verifica que el backend devuelva `sessionToken` y que `VITE_API_URL` apunte al backend correcto.
